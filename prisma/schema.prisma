@@ -28,6 +28,7 @@ model User {
   // GitHub enrichment cache (avatar reuses `image`)
   githubBio      String?
   githubRepos    Json?
+  githubStats    Json?
   githubFetchedAt DateTime?
 
   createdAt DateTime @default(now())

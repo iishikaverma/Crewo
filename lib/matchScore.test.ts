@@ -1,6 +1,6 @@
 // Run: npx tsx lib/matchScore.test.ts
 import assert from "node:assert";
-import { peopleFit, postFit, hasActiveFilter, type Candidate, type PeopleFilter } from "./matchScore";
+import { peopleFit, postFit, postMatch, hasActiveFilter, type Candidate, type PeopleFilter } from "./matchScore";
 
 const base = (over: Partial<Candidate> = {}): Candidate => ({
   skills: [],
@@ -50,5 +50,21 @@ assert.equal(postFit(["react", "node"], ["react", "node"]), 100);
 assert.equal(postFit(["react"], ["react", "node"]), 50);
 assert.equal(postFit(["python"], ["react", "node"]), 0);
 assert.equal(postFit(["react"], []), 0);
+
+// postMatch: filling an OPEN gap beats bringing a skill already covered
+const pm = (over: Partial<Parameters<typeof postMatch>[0]> = {}) =>
+  postMatch({
+    viewerSkills: [], viewerOpenTo: [], viewerBranch: null,
+    neededSkills: ["react", "node"], postType: "hackathon", authorBranch: "CSE",
+    memberSkills: [], ...over,
+  });
+const fillsGap = pm({ viewerSkills: ["react"] }).fit;          // react is open
+const fillsCovered = pm({ viewerSkills: ["react"], memberSkills: ["react"] }).fit; // react already covered
+assert.ok(fillsGap > fillsCovered, "filling an open gap scores higher than a covered one");
+// availability + campus add
+assert.ok(pm({ viewerSkills: ["react"], viewerOpenTo: ["hackathon"] }).fit > fillsGap);
+assert.ok(pm({ viewerSkills: ["react"], viewerBranch: "CSE" }).fit > fillsGap);
+// reasons mention what you bring
+assert.ok(pm({ viewerSkills: ["react"] }).reasons.some((r) => r.includes("react")));
 
 console.log("matchScore.test.ts ✓");

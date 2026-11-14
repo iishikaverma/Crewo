@@ -22,10 +22,12 @@ export function PostCard({
   post,
   viewerSkills,
   fit,
+  reasons,
 }: {
   post: PostCardData;
   viewerSkills?: string[];
   fit?: number;
+  reasons?: string[];
 }) {
   return (
     <Link
@@ -48,6 +50,17 @@ export function PostCard({
         {post.happeningAt ? ` · ${post.happeningAt.toLocaleDateString()}` : ""}
       </p>
       <SkillTags skills={post.neededSkills} highlight={viewerSkills} />
+      {reasons && reasons.length > 0 && (
+        <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-[var(--success)]">
+          <span className="text-muted">why:</span>
+          {reasons.map((r, i) => (
+            <span key={i}>
+              {r}
+              {i < reasons.length - 1 ? " ·" : ""}
+            </span>
+          ))}
+        </p>
+      )}
     </Link>
   );
 }

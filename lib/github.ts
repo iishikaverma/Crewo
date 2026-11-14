@@ -10,12 +10,20 @@ export type GithubRepo = {
   url: string;
 };
 
+export type GithubStats = {
+  totalStars: number;
+  followers: number;
+  publicRepos: number;
+  lastPushedAt: string | null;
+  languages: { name: string; count: number }[]; // repo count per language, desc
+};
+
 export type GithubProfile = {
   username: string;
   avatar: string | null;
   bio: string | null;
   topRepos: GithubRepo[];
-  languages: string[];
+  stats: GithubStats;
 };
 
 /** "https://github.com/foo", "github.com/foo/", "@foo" or "foo" -> "foo" (or null) */
@@ -56,28 +64,43 @@ export async function fetchGithubProfile(
     if (!userRes.ok) return null;
 
     const user = await userRes.json();
-    const repos: unknown[] = reposRes.ok ? await reposRes.json() : [];
+    const repos = (reposRes.ok ? await reposRes.json() : []) as Record<string, unknown>[];
+    const owned = repos.filter((r) => !r.fork);
 
-    const mapped: GithubRepo[] = (repos as Record<string, unknown>[])
-      .filter((r) => !r.fork)
-      .map((r) => ({
-        name: String(r.name),
-        description: (r.description as string | null) ?? null,
-        stars: Number(r.stargazers_count ?? 0),
-        language: (r.language as string | null) ?? null,
-        url: String(r.html_url),
-      }));
+    const mapped: GithubRepo[] = owned.map((r) => ({
+      name: String(r.name),
+      description: (r.description as string | null) ?? null,
+      stars: Number(r.stargazers_count ?? 0),
+      language: (r.language as string | null) ?? null,
+      url: String(r.html_url),
+    }));
 
     const topRepos = [...mapped].sort((a, b) => b.stars - a.stars).slice(0, 4);
-    const languages = [...new Set(mapped.map((r) => r.language).filter(Boolean) as string[])].slice(0, 6);
 
-    return {
-      username,
-      avatar: user.avatar_url ?? null,
-      bio: user.bio ?? null,
-      topRepos,
+    const langCounts = new Map<string, number>();
+    for (const r of mapped) {
+      if (r.language) langCounts.set(r.language, (langCounts.get(r.language) ?? 0) + 1);
+    }
+    const languages = [...langCounts.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+
+    const lastPushedAt = owned
+      .map((r) => String(r.pushed_at ?? ""))
+      .filter(Boolean)
+      .sort()
+      .at(-1) ?? null;
+
+    const stats: GithubStats = {
+      totalStars: mapped.reduce((s, r) => s + r.stars, 0),
+      followers: Number(user.followers ?? 0),
+      publicRepos: Number(user.public_repos ?? 0),
+      lastPushedAt,
       languages,
     };
+
+    return { username, avatar: user.avatar_url ?? null, bio: user.bio ?? null, topRepos, stats };
   } catch {
     return null;
   }

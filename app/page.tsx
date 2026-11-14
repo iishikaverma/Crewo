@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
-import { postFit } from "@/lib/matchScore";
+import { postMatch } from "@/lib/matchScore";
 import { PostCard } from "@/components/PostCard";
 import { EmptyState } from "@/components/ui";
 
@@ -24,7 +24,10 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     prisma.post.findMany({
       where: { status: "open", authorId: { not: me.id }, ...(typeFilter ? { type: typeFilter } : {}) },
       orderBy: { createdAt: "desc" },
-      include: { author: { select: { name: true, branch: true } } },
+      include: {
+        author: { select: { name: true, branch: true, skills: true } },
+        requests: { where: { status: "accepted" }, select: { requester: { select: { skills: true } } } },
+      },
     }),
     prisma.post.findMany({
       where: { authorId: me.id },
@@ -36,9 +39,21 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     }),
   ]);
 
-  // rank open posts by how well the viewer fits the needed skills
+  // rank open posts by complementary fit (how well the viewer fills remaining gaps)
   const openPosts = openPostsRaw
-    .map((p) => ({ p, fit: postFit(me.skills, p.neededSkills) }))
+    .map((p) => {
+      const memberSkills = [p.author.skills, ...p.requests.map((r) => r.requester.skills)].flat();
+      const { fit, reasons } = postMatch({
+        viewerSkills: me.skills,
+        viewerOpenTo: me.openTo,
+        viewerBranch: me.branch,
+        neededSkills: p.neededSkills,
+        postType: p.type,
+        authorBranch: p.author.branch,
+        memberSkills,
+      });
+      return { p, fit, reasons };
+    })
     .sort((a, b) => b.fit - a.fit || +b.p.createdAt - +a.p.createdAt);
 
   return (
@@ -74,8 +89,8 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           </EmptyState>
         ) : (
           <div className="flex flex-col gap-3">
-            {openPosts.map(({ p, fit }) => (
-              <PostCard key={p.id} post={p} viewerSkills={me.skills} fit={fit} />
+            {openPosts.map(({ p, fit, reasons }) => (
+              <PostCard key={p.id} post={p} viewerSkills={me.skills} fit={fit} reasons={reasons} />
             ))}
           </div>
         )}

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
 import { GithubHighlights } from "@/components/GithubHighlights";
-import type { GithubRepo } from "@/lib/github";
+import type { GithubRepo, GithubStats } from "@/lib/github";
 import { sendConnect, respondConnect } from "@/app/connections/actions";
 import { Avatar, Button, Card } from "@/components/ui";
 
@@ -33,6 +33,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
 
   const isMe = me?.id === user.id;
   const repos = (user.githubRepos as unknown as GithubRepo[] | null) ?? [];
+  const githubStats = (user.githubStats as unknown as GithubStats | null) ?? null;
 
   const [outgoing, incoming] =
     me && !isMe
@@ -81,7 +82,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
         </div>
       )}
 
-      <GithubHighlights githubUrl={user.githubUrl} githubBio={user.githubBio} repos={repos} />
+      <GithubHighlights githubUrl={user.githubUrl} githubBio={user.githubBio} repos={repos} stats={githubStats} />
 
       {!isMe && me && (
         <Card>

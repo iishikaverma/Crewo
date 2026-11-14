@@ -59,6 +59,7 @@ export async function updateProfile(formData: FormData) {
     if (gh.avatar) data.image = gh.avatar;
     data.githubBio = gh.bio;
     data.githubRepos = gh.topRepos as unknown as Prisma.InputJsonValue;
+    data.githubStats = gh.stats as unknown as Prisma.InputJsonValue;
     data.githubFetchedAt = new Date();
   }
 

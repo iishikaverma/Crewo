@@ -34,6 +34,7 @@ async function main() {
                 image: gh.avatar ?? undefined,
                 githubBio: gh.bio,
                 githubRepos: gh.topRepos as object,
+                githubStats: gh.stats as object,
                 githubFetchedAt: new Date(),
               }
             : {}),
