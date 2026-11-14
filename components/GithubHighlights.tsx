@@ -1,5 +1,6 @@
 import type { GithubRepo, GithubStats } from "@/lib/github";
 import { Card } from "@/components/ui";
+import { CountUp } from "@/components/CountUp";
 
 const LANG_COLORS = ["#7c6cff", "#38bdf8", "#34d399", "#fbbf24", "#f472b6", "#a78bfa"];
 
@@ -52,9 +53,9 @@ export function GithubHighlights({
 
       {stats && (
         <div className="mb-3 flex gap-4 text-xs text-muted">
-          <span><span className="font-semibold text-fg">★ {stats.totalStars.toLocaleString()}</span> stars</span>
-          <span><span className="font-semibold text-fg">{stats.followers.toLocaleString()}</span> followers</span>
-          <span><span className="font-semibold text-fg">{stats.publicRepos}</span> repos</span>
+          <span><span className="font-semibold text-fg">★ <CountUp value={stats.totalStars} /></span> stars</span>
+          <span><span className="font-semibold text-fg"><CountUp value={stats.followers} /></span> followers</span>
+          <span><span className="font-semibold text-fg"><CountUp value={stats.publicRepos} /></span> repos</span>
         </div>
       )}
 

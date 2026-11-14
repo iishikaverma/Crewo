@@ -124,3 +124,101 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tgrid-cell::after { display: none; }
 }
+
+/* Aurora — slow drifting gradient blobs behind everything */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  width: 46rem;
+  height: 46rem;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.16;
+}
+.aurora::before {
+  background: radial-gradient(circle, var(--accent), transparent 60%);
+  top: -18rem;
+  left: -10rem;
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+.aurora::after {
+  background: radial-gradient(circle, var(--accent-2), transparent 60%);
+  bottom: -18rem;
+  right: -12rem;
+  animation: drift-b 32s ease-in-out infinite alternate;
+}
+@keyframes drift-a { to { transform: translate(10rem, 7rem) scale(1.25); } }
+@keyframes drift-b { to { transform: translate(-9rem, -6rem) scale(1.15); } }
+@media (prefers-reduced-motion: reduce) {
+  .aurora::before, .aurora::after { animation: none; }
+}
+
+/* Animated fit-score ring */
+@property --fitdeg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.fit-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(var(--fit-color) var(--fitdeg), var(--surface-2) 0deg);
+  animation: fit-fill 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.fit-ring::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+.fit-ring > span {
+  position: relative;
+  z-index: 1;
+}
+@keyframes fit-fill { to { --fitdeg: var(--fit-target); } }
+@media (prefers-reduced-motion: reduce) {
+  .fit-ring { animation: none; --fitdeg: var(--fit-target); }
+}
+
+/* Card spotlight — radial glow follows the cursor on hover */
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  background: radial-gradient(
+    16rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--accent) 16%, transparent),
+    transparent 42%
+  );
+}
+.glow-card:hover::after { opacity: 1; }
+
+/* Confetti burst */
+.confetti-piece {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 10000;
+  animation: confetti-fall 1.1s ease-out forwards;
+}
+@keyframes confetti-fall {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--cx), var(--cy)) rotate(var(--cr)); opacity: 0; }
+}

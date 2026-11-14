@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SkillTags } from "@/components/SkillTags";
-import { Badge, FitBadge } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { FitRing } from "@/components/FitRing";
 
 const TYPE_LABEL: Record<string, string> = {
   hackathon: "🏆 Hackathon",
@@ -32,13 +33,13 @@ export function PostCard({
   return (
     <Link
       href={`/posts/${post.id}`}
-      className="group block rounded-[12px] border border-border bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-border-strong hover:bg-surface-2"
+      className="glow-card group relative block overflow-hidden rounded-[12px] border border-border bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-border-strong hover:bg-surface-2"
     >
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <span className="text-xs text-muted">{TYPE_LABEL[post.type] ?? post.type}</span>
         <span className="flex items-center gap-2">
           {post.status === "closed" && <Badge>closed</Badge>}
-          {fit != null && <FitBadge fit={fit} />}
+          {fit != null && <FitRing fit={fit} size={38} />}
         </span>
       </div>
       <h3 className="font-semibold tracking-tight transition-colors group-hover:text-fg">

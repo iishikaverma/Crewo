@@ -6,6 +6,7 @@ import { SkillTags } from "@/components/SkillTags";
 import { requestToJoin, respondToRequest, setPostStatus } from "../actions";
 import { Card, Button, Badge, Textarea } from "@/components/ui";
 import { TeamComposition } from "@/components/TeamComposition";
+import { Confetti } from "@/components/Confetti";
 
 const TYPE_LABEL: Record<string, string> = {
   hackathon: "🏆 Hackathon",
@@ -163,6 +164,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
 
           {myReq?.status === "accepted" && (
             <div className="flex flex-col gap-2">
+              <Confetti fireKey={`join-${myReq.id}`} />
               <p className="text-sm font-semibold text-[var(--success)]">
                 🎉 You&apos;re in! Here&apos;s how to reach {post.author.name ?? "the author"}:
               </p>

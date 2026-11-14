@@ -7,6 +7,7 @@ import { GithubHighlights } from "@/components/GithubHighlights";
 import type { GithubRepo, GithubStats } from "@/lib/github";
 import { sendConnect, respondConnect } from "@/app/connections/actions";
 import { Avatar, Button, Card } from "@/components/ui";
+import { Confetti } from "@/components/Confetti";
 
 function ContactLinks({ githubUrl, linkedinUrl }: { githubUrl: string | null; linkedinUrl: string | null }) {
   const links = [
@@ -88,6 +89,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
         <Card>
           {connected ? (
             <div className="flex flex-col gap-2">
+              <Confetti fireKey={`conn-${outgoing?.id ?? incoming?.id ?? user.id}`} />
               <p className="text-sm font-semibold text-[var(--success)]">✅ Connected — reach out:</p>
               <ContactLinks githubUrl={user.githubUrl} linkedinUrl={user.linkedinUrl} />
             </div>

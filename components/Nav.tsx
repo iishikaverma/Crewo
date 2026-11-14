@@ -3,6 +3,7 @@ import { currentUser } from "@/lib/user";
 import { prisma } from "@/lib/prisma";
 import { signOut } from "@/auth";
 import { Avatar, Button } from "@/components/ui";
+import { CmdKButton } from "@/components/CmdKButton";
 
 export async function Nav() {
   const user = await currentUser();
@@ -36,6 +37,7 @@ export async function Nav() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <CmdKButton />
           <Link href="/profile" className="flex items-center gap-2">
             <Avatar src={user.image} name={user.name} size={26} />
             <span className="hidden text-sm text-muted sm:inline">{user.name ?? user.email}</span>
