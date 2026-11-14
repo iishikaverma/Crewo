@@ -1,0 +1,85 @@
+// People-directory ranking — the mini-match layer.
+// Soft ranking: every candidate gets a 0–100 fit vs the active filters, so the
+// board never comes up empty with sparse data — near-matches just rank lower.
+// Weights are tunable consts. ponytail: flat weighted-average over ACTIVE filters.
+
+export type PeopleFilter = {
+  skills: string[];
+  role: string | null;
+  minYears: number | null;
+  location: string | null;
+  openTo: string[];
+};
+
+export type Candidate = {
+  skills: string[];
+  role: string | null;
+  yearsExperience: number | null;
+  location: string | null;
+  openTo: string[];
+  bio?: string | null;
+  githubRepos?: unknown;
+  image?: string | null;
+};
+
+export const WEIGHTS = { skills: 50, role: 20, experience: 15, location: 10, openTo: 15 };
+
+export function hasActiveFilter(f: PeopleFilter): boolean {
+  return (
+    f.skills.length > 0 ||
+    !!f.role ||
+    f.minYears != null ||
+    !!f.location ||
+    f.openTo.length > 0
+  );
+}
+
+export function peopleFit(c: Candidate, f: PeopleFilter): number {
+  let weighted = 0;
+  let total = 0;
+
+  if (f.skills.length) {
+    const cs = new Set(c.skills.map((s) => s.toLowerCase()));
+    const hit = f.skills.filter((s) => cs.has(s.toLowerCase())).length;
+    weighted += WEIGHTS.skills * (hit / f.skills.length);
+    total += WEIGHTS.skills;
+  }
+  if (f.role) {
+    weighted += WEIGHTS.role * (c.role === f.role ? 1 : 0);
+    total += WEIGHTS.role;
+  }
+  if (f.minYears != null) {
+    const y = c.yearsExperience ?? 0;
+    const s = y >= f.minYears ? 1 : f.minYears > 0 ? Math.max(0, y / f.minYears) : 1;
+    weighted += WEIGHTS.experience * s;
+    total += WEIGHTS.experience;
+  }
+  if (f.location) {
+    const m = (c.location ?? "").toLowerCase().includes(f.location.toLowerCase()) ? 1 : 0;
+    weighted += WEIGHTS.location * m;
+    total += WEIGHTS.location;
+  }
+  if (f.openTo.length) {
+    const co = new Set(c.openTo);
+    const m = f.openTo.some((o) => co.has(o)) ? 1 : 0;
+    weighted += WEIGHTS.openTo * m;
+    total += WEIGHTS.openTo;
+  }
+
+  if (total === 0) return 0;
+  return Math.round((weighted / total) * 100);
+}
+
+/** When no filters are active, rank by how complete/useful a profile is. */
+export function completeness(c: Candidate): number {
+  let n = 0;
+  if (c.bio) n++;
+  if (c.skills.length) n++;
+  if (c.role) n++;
+  if (c.location) n++;
+  if (c.yearsExperience != null) n++;
+  if (c.openTo.length) n++;
+  if (Array.isArray(c.githubRepos) && c.githubRepos.length) n += 2;
+  if (c.image) n++;
+  return n;
+}

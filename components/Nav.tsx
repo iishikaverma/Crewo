@@ -13,6 +13,7 @@ export async function Nav() {
           Crewo
         </Link>
         <Link href="/" className="text-gray-500 hover:text-current">Browse</Link>
+        <Link href="/people" className="text-gray-500 hover:text-current">People</Link>
         <Link href="/posts/new" className="text-gray-500 hover:text-current">New post</Link>
         <Link href="/profile" className="text-gray-500 hover:text-current">Profile</Link>
       </nav>
