@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  image       String?
+  year        String?
+  branch      String?
+  bio         String?
+  githubUrl   String?
+  linkedinUrl String?
+  whatsapp    String?
+  lookingFor  String?
+  skills      String[]
+  createdAt   DateTime @default(now())
+
+  posts    Post[]
+  requests JoinRequest[]
+}
+
+enum PostType {
+  hackathon
+  project
+  study
+}
+
+enum PostStatus {
+  open
+  closed
+}
+
+enum RequestStatus {
+  pending
+  accepted
+  declined
+}
+
+model Post {
+  id           String     @id @default(cuid())
+  authorId     String
+  author       User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  type         PostType
+  title        String
+  description  String
+  neededSkills String[]
+  teamSize     Int
+  happeningAt  DateTime?
+  status       PostStatus @default(open)
+  createdAt    DateTime   @default(now())
+
+  requests JoinRequest[]
+}
+
+model JoinRequest {
+  id          String        @id @default(cuid())
+  postId      String
+  post        Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  requesterId String
+  requester   User          @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+  message     String
+  status      RequestStatus @default(pending)
+  createdAt   DateTime      @default(now())
+
+  @@unique([postId, requesterId])
+}
