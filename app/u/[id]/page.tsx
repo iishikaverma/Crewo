@@ -8,6 +8,7 @@ import type { GithubRepo, GithubStats } from "@/lib/github";
 import { sendConnect, respondConnect } from "@/app/connections/actions";
 import { Avatar, Button, Card } from "@/components/ui";
 import { Confetti } from "@/components/Confetti";
+import { ConfettiButton } from "@/components/ConfettiButton";
 
 function ContactLinks({ githubUrl, linkedinUrl }: { githubUrl: string | null; linkedinUrl: string | null }) {
   const links = [
@@ -101,7 +102,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
               </p>
               <div className="flex gap-2">
                 <form action={respondConnect.bind(null, incoming.id, "accepted")}>
-                  <Button className="px-3 py-1.5 text-xs">Accept</Button>
+                  <ConfettiButton>Accept</ConfettiButton>
                 </form>
                 <form action={respondConnect.bind(null, incoming.id, "declined")}>
                   <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>

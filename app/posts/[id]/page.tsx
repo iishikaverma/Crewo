@@ -7,6 +7,7 @@ import { requestToJoin, respondToRequest, setPostStatus } from "../actions";
 import { Card, Button, Badge, Textarea } from "@/components/ui";
 import { TeamComposition } from "@/components/TeamComposition";
 import { Confetti } from "@/components/Confetti";
+import { ConfettiButton } from "@/components/ConfettiButton";
 
 const TYPE_LABEL: Record<string, string> = {
   hackathon: "🏆 Hackathon",
@@ -116,7 +117,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                     {r.message && <p className="mt-2 text-sm text-muted">{r.message}</p>}
                     <div className="mt-3 flex gap-2">
                       <form action={respondToRequest.bind(null, r.id, "accepted")}>
-                        <Button className="px-3 py-1.5 text-xs">Accept</Button>
+                        <ConfettiButton>Accept</ConfettiButton>
                       </form>
                       <form action={respondToRequest.bind(null, r.id, "declined")}>
                         <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>

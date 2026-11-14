@@ -208,6 +208,25 @@ body {
 }
 .glow-card:hover::after { opacity: 1; }
 
+/* List item enter / leave transitions */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.card-enter { animation: card-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+.card-leaving {
+  overflow: hidden;
+  animation: card-leave 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes card-leave {
+  from { opacity: 1; max-height: 260px; transform: none; }
+  to { opacity: 0; max-height: 0; transform: translateX(24px); margin-bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-enter, .card-leaving { animation: none; }
+}
+
 /* Confetti burst */
 .confetti-piece {
   position: fixed;

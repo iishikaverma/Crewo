@@ -1,17 +1,13 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
-import { respondConnect } from "./actions";
-import { PageHeader, Card, Button, EmptyState } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
+import { ConnectionsClient } from "./ConnectionsClient";
 
-function PersonLink({ user }: { user: { id: string; name: string | null; email: string } }) {
-  return (
-    <Link href={`/u/${user.id}`} className="font-medium hover:text-accent-2 hover:underline">
-      {user.name ?? user.email}
-    </Link>
-  );
-}
+const person = (u: {
+  id: string; name: string | null; email: string; role: string | null;
+  githubUrl: string | null; linkedinUrl: string | null;
+}) => ({ id: u.id, name: u.name, email: u.email, role: u.role, githubUrl: u.githubUrl, linkedinUrl: u.linkedinUrl });
 
 export default async function ConnectionsPage() {
   const me = await currentUser();
@@ -38,73 +34,14 @@ export default async function ConnectionsPage() {
   return (
     <main className="flex flex-col gap-8">
       <PageHeader title="Connections" />
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold tracking-tight">
-          Requests to you{incoming.length > 0 ? ` (${incoming.length})` : ""}
-        </h2>
-        {incoming.length === 0 ? (
-          <EmptyState>No pending requests.</EmptyState>
-        ) : (
-          incoming.map((r) => (
-            <Card key={r.id}>
-              <p className="text-sm">
-                <PersonLink user={r.from} />
-                {r.from.role ? ` · ${r.from.role}` : ""}
-              </p>
-              {r.message && <p className="mt-1 text-sm text-muted">{r.message}</p>}
-              <div className="mt-3 flex gap-2">
-                <form action={respondConnect.bind(null, r.id, "accepted")}>
-                  <Button className="px-3 py-1.5 text-xs">Accept</Button>
-                </form>
-                <form action={respondConnect.bind(null, r.id, "declined")}>
-                  <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
-                </form>
-              </div>
-            </Card>
-          ))
-        )}
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold tracking-tight">Your connections</h2>
-        {accepted.length === 0 ? (
-          <EmptyState>
-            None yet. <Link href="/people" className="text-accent-2 hover:underline">Find people</Link>.
-          </EmptyState>
-        ) : (
-          accepted.map((r) => {
-            const other = r.fromId === me.id ? r.to : r.from;
-            return (
-              <Card key={r.id} className="flex items-center justify-between">
-                <div>
-                  <PersonLink user={other} />
-                  <p className="text-sm text-muted">{other.role ?? ""}</p>
-                </div>
-                <div className="flex gap-3 text-sm">
-                  {other.githubUrl && (
-                    <a href={other.githubUrl} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-fg">GitHub</a>
-                  )}
-                  {other.linkedinUrl && (
-                    <a href={other.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-fg">LinkedIn</a>
-                  )}
-                </div>
-              </Card>
-            );
-          })
-        )}
-      </section>
-
-      {sent.length > 0 && (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold tracking-tight">Sent — pending</h2>
-          {sent.map((r) => (
-            <Card key={r.id} className="py-3 text-sm">
-              <PersonLink user={r.to} /> <span className="text-muted">· waiting</span>
-            </Card>
-          ))}
-        </section>
-      )}
+      <ConnectionsClient
+        initialRequests={incoming.map((r) => ({ id: r.id, message: r.message, from: person(r.from) }))}
+        initialConnections={accepted.map((r) => ({
+          id: r.id,
+          other: person(r.fromId === me.id ? r.to : r.from),
+        }))}
+        sent={sent.map((r) => ({ id: r.id, to: { id: r.to.id, name: r.to.name, email: r.to.email } }))}
+      />
     </main>
   );
 }
