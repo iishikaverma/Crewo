@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
@@ -15,15 +15,12 @@ type Contactable = {
   name: string | null;
   githubUrl: string | null;
   linkedinUrl: string | null;
-  whatsapp: string | null;
 };
 
 function Contact({ u }: { u: Contactable }) {
   const links: { label: string; href: string }[] = [];
   if (u.githubUrl) links.push({ label: "GitHub", href: u.githubUrl });
   if (u.linkedinUrl) links.push({ label: "LinkedIn", href: u.linkedinUrl });
-  if (u.whatsapp)
-    links.push({ label: "WhatsApp", href: `https://wa.me/${u.whatsapp.replace(/[^0-9]/g, "")}` });
 
   if (links.length === 0)
     return <p className="text-sm text-gray-500">No contact links on their profile yet.</p>;
@@ -48,7 +45,7 @@ function Contact({ u }: { u: Contactable }) {
 export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
   const { id } = await params;
   const me = await currentUser();
-  if (!me) return null;
+  if (!me) redirect("/signin");
 
   const post = await prisma.post.findUnique({
     where: { id },

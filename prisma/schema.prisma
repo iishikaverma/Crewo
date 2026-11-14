@@ -16,13 +16,26 @@ model User {
   bio         String?
   githubUrl   String?
   linkedinUrl String?
-  whatsapp    String?
   lookingFor  String?
   skills      String[]
-  createdAt   DateTime @default(now())
 
-  posts    Post[]
-  requests JoinRequest[]
+  // People-directory profile fields
+  role            String?
+  openTo          String[]
+  yearsExperience Int?
+  location        String?
+
+  // GitHub enrichment cache (avatar reuses `image`)
+  githubBio      String?
+  githubRepos    Json?
+  githubFetchedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  posts           Post[]
+  requests        JoinRequest[]
+  sentConnects    ConnectRequest[] @relation("sentConnects")
+  receivedConnects ConnectRequest[] @relation("receivedConnects")
 }
 
 enum PostType {
@@ -69,4 +82,18 @@ model JoinRequest {
   createdAt   DateTime      @default(now())
 
   @@unique([postId, requesterId])
+}
+
+// Person-to-person connect (people directory). Mirrors JoinRequest.
+model ConnectRequest {
+  id        String        @id @default(cuid())
+  fromId    String
+  from      User          @relation("sentConnects", fields: [fromId], references: [id], onDelete: Cascade)
+  toId      String
+  to        User          @relation("receivedConnects", fields: [toId], references: [id], onDelete: Cascade)
+  message   String
+  status    RequestStatus @default(pending)
+  createdAt DateTime      @default(now())
+
+  @@unique([fromId, toId])
 }

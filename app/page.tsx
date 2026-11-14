@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { PostCard } from "@/components/PostCard";
 
 export default async function Home() {
   const me = await currentUser();
-  if (!me) return null; // proxy redirects, this is just for types
+  if (!me) redirect("/signin"); // stale/deleted session → re-login
 
   const [openPosts, myPosts] = await Promise.all([
     prisma.post.findMany({

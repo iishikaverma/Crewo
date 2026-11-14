@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { signIn, auth } from "@/auth";
+import { signIn } from "@/auth";
+import { currentUser } from "@/lib/user";
 
 export default async function SignInPage() {
-  const session = await auth();
-  if (session?.user) redirect("/");
+  // DB-backed check (not just the JWT) so a stale session for a deleted user
+  // doesn't loop: it falls through to the login form instead of redirecting.
+  const me = await currentUser();
+  if (me) redirect("/");
 
   const isProd = process.env.NODE_ENV === "production";
   const users = isProd

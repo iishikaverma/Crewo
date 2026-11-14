@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/user";
+import { SKILLS, ROLES, OPEN_TO } from "@/lib/skills";
 import { updateProfile } from "./actions";
 
 const input =
@@ -7,16 +9,20 @@ const label = "text-sm font-medium text-gray-600 dark:text-gray-400";
 
 export default async function ProfilePage() {
   const me = await currentUser();
-  if (!me) return null;
+  if (!me) redirect("/signin");
+
+  const skillSet = new Set(me.skills);
+  const otherSkills = me.skills.filter((s) => !(SKILLS as readonly string[]).includes(s));
+  const openToSet = new Set(me.openTo);
 
   return (
     <main>
       <h1 className="mb-1 text-xl font-bold">Your profile</h1>
       <p className="mb-6 text-sm text-gray-500">
-        Skills and &ldquo;looking for&rdquo; power your match score and what others see.
+        Skills, role and experience power the People directory and your match score.
       </p>
 
-      <form action={updateProfile} className="flex flex-col gap-4">
+      <form action={updateProfile} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <label className={label}>Name</label>
           <input name="name" defaultValue={me.name ?? ""} className={input} required />
@@ -24,24 +30,70 @@ export default async function ProfilePage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <label className={label}>Year</label>
-            <input name="year" defaultValue={me.year ?? ""} placeholder="3" className={input} />
+            <label className={label}>Role</label>
+            <select name="role" defaultValue={me.role ?? ""} className={input}>
+              <option value="">—</option>
+              {ROLES.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className={label}>Branch / campus</label>
-            <input name="branch" defaultValue={me.branch ?? ""} placeholder="CSE" className={input} />
+            <label className={label}>Years of experience</label>
+            <input
+              name="yearsExperience"
+              type="number"
+              min={0}
+              max={50}
+              defaultValue={me.yearsExperience ?? ""}
+              className={input}
+            />
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className={label}>Skills (comma-separated)</label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <label className={label}>Location</label>
+            <input name="location" defaultValue={me.location ?? ""} placeholder="Delhi" className={input} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={label}>Year / branch</label>
+            <div className="flex gap-2">
+              <input name="year" defaultValue={me.year ?? ""} placeholder="3" className={input} />
+              <input name="branch" defaultValue={me.branch ?? ""} placeholder="CSE" className={input} />
+            </div>
+          </div>
+        </div>
+
+        <fieldset className="flex flex-col gap-2">
+          <legend className={label}>Stack / skills</legend>
+          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+            {SKILLS.map((s) => (
+              <label key={s} className="flex items-center gap-1.5 text-sm">
+                <input type="checkbox" name="skills" value={s} defaultChecked={skillSet.has(s)} />
+                {s}
+              </label>
+            ))}
+          </div>
           <input
-            name="skills"
-            defaultValue={me.skills.join(", ")}
-            placeholder="react, node, figma"
+            name="skillsOther"
+            defaultValue={otherSkills.join(", ")}
+            placeholder="other skills, comma-separated"
             className={input}
           />
-        </div>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-2">
+          <legend className={label}>Open to</legend>
+          <div className="flex flex-wrap gap-3">
+            {OPEN_TO.map((o) => (
+              <label key={o} className="flex items-center gap-1.5 text-sm">
+                <input type="checkbox" name="openTo" value={o} defaultChecked={openToSet.has(o)} />
+                {o}
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         <div className="flex flex-col gap-1">
           <label className={label}>Looking for</label>
@@ -54,30 +106,21 @@ export default async function ProfilePage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className={label}>Bio</label>
+          <label className={label}>About / bio</label>
           <textarea name="bio" defaultValue={me.bio ?? ""} rows={3} className={input} />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className={label}>Avatar image URL</label>
-          <input name="image" defaultValue={me.image ?? ""} className={input} />
         </div>
 
         <fieldset className="flex flex-col gap-4 rounded-md border border-dashed border-gray-300 p-4 dark:border-gray-700">
           <legend className="px-1 text-xs text-gray-500">
-            Contact — revealed only after a request is accepted
+            Links — GitHub is auto-fetched (avatar, bio, top repos). LinkedIn revealed on connect.
           </legend>
           <div className="flex flex-col gap-1">
             <label className={label}>GitHub URL</label>
-            <input name="githubUrl" defaultValue={me.githubUrl ?? ""} className={input} />
+            <input name="githubUrl" defaultValue={me.githubUrl ?? ""} placeholder="https://github.com/you" className={input} />
           </div>
           <div className="flex flex-col gap-1">
             <label className={label}>LinkedIn URL</label>
             <input name="linkedinUrl" defaultValue={me.linkedinUrl ?? ""} className={input} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className={label}>WhatsApp number</label>
-            <input name="whatsapp" defaultValue={me.whatsapp ?? ""} placeholder="+91..." className={input} />
           </div>
         </fieldset>
 
