@@ -58,9 +58,11 @@ model Post {
   id           String     @id @default(cuid())
   authorId     String
   author       User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  type         PostType
-  title        String
-  description  String
+  type          PostType
+  title         String
+  hackathonName String?
+  description   String
+  expecting     String?
   neededSkills String[]
   teamSize     Int
   happeningAt  DateTime?

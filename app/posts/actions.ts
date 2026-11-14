@@ -21,13 +21,19 @@ export async function createPost(formData: FormData) {
 
   const teamSize = Math.max(2, Math.min(20, Math.round(Number(formData.get("teamSize")) || 2)));
   const when = String(formData.get("happeningAt") ?? "");
+  const trimOrNull = (v: FormDataEntryValue | null) => {
+    const s = String(v ?? "").trim();
+    return s.length ? s : null;
+  };
 
   const post = await prisma.post.create({
     data: {
       authorId,
       type: safeType,
       title,
+      hackathonName: trimOrNull(formData.get("hackathonName")),
       description,
+      expecting: trimOrNull(formData.get("expecting")),
       neededSkills: parseSkills(formData.get("neededSkills")),
       teamSize,
       happeningAt: when ? new Date(when) : null,

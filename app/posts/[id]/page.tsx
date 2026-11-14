@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
 import { requestToJoin, respondToRequest, setPostStatus } from "../actions";
 import { Card, Button, Badge, Textarea } from "@/components/ui";
+import { TeamComposition } from "@/components/TeamComposition";
 
 const TYPE_LABEL: Record<string, string> = {
   hackathon: "🏆 Hackathon",
@@ -50,13 +51,17 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
   const accepted = post.requests.filter((r) => r.status === "accepted");
   const declined = post.requests.filter((r) => r.status === "declined");
 
+  const memberSkills = [post.author.skills, ...accepted.map((r) => r.requester.skills)].flat();
+  const filledSpots = 1 + accepted.length;
+
   return (
     <main className="flex flex-col gap-6">
       <Link href="/" className="text-sm text-muted hover:text-fg">← Browse</Link>
 
       <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-xs text-muted">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
           <span>{TYPE_LABEL[post.type] ?? post.type}</span>
+          {post.hackathonName && <Badge tone="accent">{post.hackathonName}</Badge>}
           {post.status === "closed" && <Badge>closed</Badge>}
         </div>
         <h1 className="text-2xl font-bold tracking-tight">{post.title}</h1>
@@ -66,11 +71,23 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
           {post.happeningAt ? ` · ${post.happeningAt.toLocaleDateString()}` : ""}
         </p>
         <p className="whitespace-pre-wrap text-fg/90">{post.description}</p>
+        {post.expecting && (
+          <p className="text-sm text-muted">
+            <span className="font-medium text-fg">Looking for:</span> {post.expecting}
+          </p>
+        )}
         <div className="mt-1">
           <p className="mb-1.5 text-xs font-medium text-muted">Skills needed</p>
           <SkillTags skills={post.neededSkills} highlight={isAuthor ? [] : me.skills} />
         </div>
       </header>
+
+      <TeamComposition
+        neededSkills={post.neededSkills}
+        memberSkills={memberSkills}
+        filled={filledSpots}
+        teamSize={post.teamSize}
+      />
 
       {isAuthor ? (
         <section className="flex flex-col gap-5">

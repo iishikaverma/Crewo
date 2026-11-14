@@ -19,12 +19,20 @@ export default function NewPostPage() {
           </Field>
         </div>
 
-        <Field label="Title">
-          <Input name="title" required placeholder="Need 1 backend + 1 designer for HackNU this weekend" />
+        <Field label="Hackathon / event name (optional)">
+          <Input name="hackathonName" placeholder="HackNU 2026, Smart India Hackathon…" />
         </Field>
 
-        <Field label="Description">
-          <Textarea name="description" required rows={4} placeholder="What you're building, what's covered, what you need." />
+        <Field label="Title">
+          <Input name="title" required placeholder="Need 1 backend + 1 designer this weekend" />
+        </Field>
+
+        <Field label="The idea">
+          <Textarea name="description" required rows={4} placeholder="What you're building and what's already covered." />
+        </Field>
+
+        <Field label="What you expect from a teammate">
+          <Textarea name="expecting" rows={2} placeholder="Someone who can own the backend, commits for the full weekend, ships fast." />
         </Field>
 
         <Field label="Skills needed (comma-separated)">

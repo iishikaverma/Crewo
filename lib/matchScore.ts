@@ -70,6 +70,14 @@ export function peopleFit(c: Candidate, f: PeopleFilter): number {
   return Math.round((weighted / total) * 100);
 }
 
+/** Feed fit: how much of a post's needed skills the viewer covers (0–100). */
+export function postFit(viewerSkills: string[], neededSkills: string[]): number {
+  if (!neededSkills.length) return 0;
+  const vs = new Set(viewerSkills.map((s) => s.toLowerCase()));
+  const hit = neededSkills.filter((s) => vs.has(s.toLowerCase())).length;
+  return Math.round((hit / neededSkills.length) * 100);
+}
+
 /** When no filters are active, rank by how complete/useful a profile is. */
 export function completeness(c: Candidate): number {
   let n = 0;

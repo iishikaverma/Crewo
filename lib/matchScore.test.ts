@@ -1,6 +1,6 @@
 // Run: npx tsx lib/matchScore.test.ts
 import assert from "node:assert";
-import { peopleFit, hasActiveFilter, type Candidate, type PeopleFilter } from "./matchScore";
+import { peopleFit, postFit, hasActiveFilter, type Candidate, type PeopleFilter } from "./matchScore";
 
 const base = (over: Partial<Candidate> = {}): Candidate => ({
   skills: [],
@@ -44,5 +44,11 @@ assert.equal(peopleFit(base({ openTo: ["project"] }), filt({ openTo: ["internshi
 // no active filter → 0 and hasActiveFilter false
 assert.equal(hasActiveFilter(filt()), false);
 assert.equal(peopleFit(base({ skills: ["react"] }), filt()), 0);
+
+// postFit: fraction of needed skills the viewer covers
+assert.equal(postFit(["react", "node"], ["react", "node"]), 100);
+assert.equal(postFit(["react"], ["react", "node"]), 50);
+assert.equal(postFit(["python"], ["react", "node"]), 0);
+assert.equal(postFit(["react"], []), 0);
 
 console.log("matchScore.test.ts ✓");
