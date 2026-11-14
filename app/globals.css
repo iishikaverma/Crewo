@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
+/* ---- Dark-premium design tokens (dark-first) ---- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0b0b0e;
+  --bg-elev: #121216;
+  --surface: #151519;
+  --surface-2: #1c1c22;
+  --border: #26262e;
+  --border-strong: #35353f;
+  --fg: #ededf1;
+  --muted: #9b9ba6;
+  --faint: #6a6a76;
+
+  --accent: #7c6cff;
+  --accent-2: #a78bfa;
+  --accent-fg: #ffffff;
+  --accent-soft: color-mix(in oklab, var(--accent) 16%, transparent);
+  --accent-glow: color-mix(in oklab, var(--accent) 38%, transparent);
+
+  --success: #34d399;
+  --success-soft: color-mix(in oklab, var(--success) 16%, transparent);
+  --danger: #f87171;
+
+  --radius: 10px;
+  --ring: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+
+/* Optional light theme (opt-in via data-theme="light") */
+:root[data-theme="light"] {
+  --bg: #fbfbfd;
+  --bg-elev: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f7;
+  --border: #e6e6ec;
+  --border-strong: #d7d7df;
+  --fg: #16161a;
+  --muted: #5c5c68;
+  --faint: #8a8a96;
+  --accent-fg: #ffffff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-bg-elev: var(--bg-elev);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-fg: var(--accent-fg);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --radius-xl: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* subtle top glow for premium depth */
+  background-image: radial-gradient(
+    60rem 32rem at 50% -12rem,
+    color-mix(in oklab, var(--accent) 10%, transparent),
+    transparent 70%
+  );
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* Consistent focus ring */
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Slim dark scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* TileGrid — background grid that reveals colored tiles on hover, then fades out */
+.tgrid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  overflow: hidden;
+  pointer-events: auto;
+}
+.tgrid-cell {
+  position: relative;
+}
+.tgrid-cell::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 5px;
+  background: var(--c);
+  box-shadow: 0 0 14px -2px var(--c);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.tgrid-cell:hover::after {
+  opacity: 0.85;
+  transition: opacity 0s; /* instant reveal on hover, slow fade on leave */
+}
+@media (prefers-reduced-motion: reduce) {
+  .tgrid-cell::after { display: none; }
 }

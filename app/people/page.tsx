@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { FilterBar } from "@/components/FilterBar";
 import { ProfileCard } from "@/components/ProfileCard";
+import { PageHeader } from "@/components/ui";
 import {
   peopleFit,
   completeness,
@@ -52,16 +53,14 @@ export default async function PeoplePage({ searchParams }: PageProps<"/people">)
 
   return (
     <main className="flex flex-col gap-5">
-      <div>
-        <h1 className="text-xl font-bold">People</h1>
-        <p className="text-sm text-gray-500">
-          Filter by stack, experience, role and location — ranked by fit.
-        </p>
-      </div>
+      <PageHeader
+        title="People"
+        subtitle="Filter by stack, experience, role and location — ranked by fit."
+      />
 
       <FilterBar filter={filter} />
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-muted">
         {ranked.length} {ranked.length === 1 ? "person" : "people"}
         {active ? " — ranked by fit" : ""}
       </p>

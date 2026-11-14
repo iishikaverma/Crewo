@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { PostCard } from "@/components/PostCard";
+import { EmptyState } from "@/components/ui";
 
 export default async function Home() {
   const me = await currentUser();
-  if (!me) redirect("/signin"); // stale/deleted session → re-login
+  if (!me) redirect("/signin");
 
   const [openPosts, myPosts] = await Promise.all([
     prisma.post.findMany({
@@ -25,13 +26,14 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="flex flex-col gap-8">
-      <section>
-        <h2 className="mb-3 text-lg font-semibold">Open posts</h2>
+    <main className="flex flex-col gap-10">
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold tracking-tight">Open posts</h2>
         {openPosts.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            No open posts yet. <Link href="/posts/new" className="underline">Post a need</Link>.
-          </p>
+          <EmptyState>
+            No open posts yet.{" "}
+            <Link href="/posts/new" className="text-accent-2 hover:underline">Post a need</Link>.
+          </EmptyState>
         ) : (
           <div className="flex flex-col gap-3">
             {openPosts.map((p) => (
@@ -41,19 +43,20 @@ export default async function Home() {
         )}
       </section>
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold">Your posts</h2>
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold tracking-tight">Your posts</h2>
         {myPosts.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            You haven&apos;t posted yet. <Link href="/posts/new" className="underline">Create one</Link>.
-          </p>
+          <EmptyState>
+            You haven&apos;t posted yet.{" "}
+            <Link href="/posts/new" className="text-accent-2 hover:underline">Create one</Link>.
+          </EmptyState>
         ) : (
           <div className="flex flex-col gap-3">
             {myPosts.map((p) => (
               <div key={p.id} className="relative">
                 <PostCard post={p} />
                 {p._count.requests > 0 && (
-                  <span className="absolute right-3 top-3 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white">
+                  <span className="absolute right-3 top-3 z-10 rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-fg shadow-[0_0_14px_-3px_var(--accent-glow)]">
                     {p._count.requests} new
                   </span>
                 )}

@@ -35,7 +35,7 @@ export const ROLES = [
   "devops",
 ] as const;
 
-export const OPEN_TO = ["hackathon", "project", "study", "internship"] as const;
+export const OPEN_TO = ["hackathon", "project", "internship"] as const;
 
 export type Role = (typeof ROLES)[number];
 export type OpenTo = (typeof OPEN_TO)[number];

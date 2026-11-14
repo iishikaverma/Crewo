@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SkillTags } from "@/components/SkillTags";
+import { Avatar, FitBadge } from "@/components/ui";
 
 export type ProfileCardData = {
   id: string;
@@ -33,27 +34,16 @@ export function ProfileCard({
   return (
     <Link
       href={`/u/${user.id}`}
-      className="flex gap-3 rounded-lg border border-gray-200 p-4 transition hover:border-gray-400 dark:border-gray-800 dark:hover:border-gray-600"
+      className="group flex gap-3 rounded-[12px] border border-border bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-border-strong hover:bg-surface-2"
     >
-      {user.image ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={user.image} alt="" className="h-12 w-12 shrink-0 rounded-full" />
-      ) : (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-200 font-semibold dark:bg-gray-800">
-          {(user.name ?? user.email).charAt(0).toUpperCase()}
-        </div>
-      )}
+      <Avatar src={user.image} name={user.name} size={48} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="truncate font-semibold">{user.name ?? user.email}</h3>
-          {fit != null && (
-            <span className="shrink-0 rounded bg-green-600/15 px-1.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-300">
-              {fit}% fit
-            </span>
-          )}
+          <h3 className="truncate font-semibold tracking-tight">{user.name ?? user.email}</h3>
+          {fit != null && <FitBadge fit={fit} />}
         </div>
-        {meta && <p className="text-sm text-gray-500">{meta}</p>}
-        {user.bio && <p className="mt-0.5 line-clamp-1 text-sm text-gray-500">{user.bio}</p>}
+        {meta && <p className="text-sm text-muted">{meta}</p>}
+        {user.bio && <p className="mt-0.5 line-clamp-1 text-sm text-faint">{user.bio}</p>}
         <div className="mt-2">
           <SkillTags skills={user.skills} highlight={highlightSkills} />
         </div>

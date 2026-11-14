@@ -41,7 +41,6 @@ model User {
 enum PostType {
   hackathon
   project
-  study
 }
 
 enum PostStatus {

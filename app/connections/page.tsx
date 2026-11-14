@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { respondConnect } from "./actions";
+import { PageHeader, Card, Button, EmptyState } from "@/components/ui";
 
 function PersonLink({ user }: { user: { id: string; name: string | null; email: string } }) {
   return (
-    <Link href={`/u/${user.id}`} className="font-medium hover:underline">
+    <Link href={`/u/${user.id}`} className="font-medium hover:text-accent-2 hover:underline">
       {user.name ?? user.email}
     </Link>
   );
@@ -36,82 +37,72 @@ export default async function ConnectionsPage() {
 
   return (
     <main className="flex flex-col gap-8">
-      <h1 className="text-xl font-bold">Connections</h1>
+      <PageHeader title="Connections" />
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold">
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold tracking-tight">
           Requests to you{incoming.length > 0 ? ` (${incoming.length})` : ""}
         </h2>
         {incoming.length === 0 ? (
-          <p className="text-sm text-gray-500">No pending requests.</p>
+          <EmptyState>No pending requests.</EmptyState>
         ) : (
-          <div className="flex flex-col gap-3">
-            {incoming.map((r) => (
-              <div key={r.id} className="rounded-lg border border-gray-200 p-3 dark:border-gray-800">
-                <p className="text-sm">
-                  <PersonLink user={r.from} />
-                  {r.from.role ? ` · ${r.from.role}` : ""}
-                </p>
-                {r.message && <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{r.message}</p>}
-                <div className="mt-3 flex gap-2">
-                  <form action={respondConnect.bind(null, r.id, "accepted")}>
-                    <button className="rounded-md bg-green-600 px-3 py-1 text-sm font-medium text-white hover:bg-green-700">
-                      Accept
-                    </button>
-                  </form>
-                  <form action={respondConnect.bind(null, r.id, "declined")}>
-                    <button className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800">
-                      Decline
-                    </button>
-                  </form>
-                </div>
+          incoming.map((r) => (
+            <Card key={r.id}>
+              <p className="text-sm">
+                <PersonLink user={r.from} />
+                {r.from.role ? ` · ${r.from.role}` : ""}
+              </p>
+              {r.message && <p className="mt-1 text-sm text-muted">{r.message}</p>}
+              <div className="mt-3 flex gap-2">
+                <form action={respondConnect.bind(null, r.id, "accepted")}>
+                  <Button className="px-3 py-1.5 text-xs">Accept</Button>
+                </form>
+                <form action={respondConnect.bind(null, r.id, "declined")}>
+                  <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
+                </form>
               </div>
-            ))}
-          </div>
+            </Card>
+          ))
         )}
       </section>
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold">Your connections</h2>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold tracking-tight">Your connections</h2>
         {accepted.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            None yet. <Link href="/people" className="underline">Find people</Link>.
-          </p>
+          <EmptyState>
+            None yet. <Link href="/people" className="text-accent-2 hover:underline">Find people</Link>.
+          </EmptyState>
         ) : (
-          <div className="flex flex-col gap-3">
-            {accepted.map((r) => {
-              const other = r.fromId === me.id ? r.to : r.from;
-              return (
-                <div key={r.id} className="flex items-center justify-between rounded-lg border border-green-600/40 p-3">
-                  <div>
-                    <PersonLink user={other} />
-                    <p className="text-sm text-gray-500">{other.role ?? ""}</p>
-                  </div>
-                  <div className="flex gap-2 text-sm">
-                    {other.githubUrl && (
-                      <a href={other.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
-                    )}
-                    {other.linkedinUrl && (
-                      <a href={other.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
-                    )}
-                  </div>
+          accepted.map((r) => {
+            const other = r.fromId === me.id ? r.to : r.from;
+            return (
+              <Card key={r.id} className="flex items-center justify-between">
+                <div>
+                  <PersonLink user={other} />
+                  <p className="text-sm text-muted">{other.role ?? ""}</p>
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex gap-3 text-sm">
+                  {other.githubUrl && (
+                    <a href={other.githubUrl} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-fg">GitHub</a>
+                  )}
+                  {other.linkedinUrl && (
+                    <a href={other.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-fg">LinkedIn</a>
+                  )}
+                </div>
+              </Card>
+            );
+          })
         )}
       </section>
 
       {sent.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-lg font-semibold">Sent — pending</h2>
-          <div className="flex flex-col gap-2">
-            {sent.map((r) => (
-              <div key={r.id} className="rounded-lg border border-gray-200 p-3 text-sm dark:border-gray-800">
-                <PersonLink user={r.to} /> <span className="text-gray-500">· waiting</span>
-              </div>
-            ))}
-          </div>
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold tracking-tight">Sent — pending</h2>
+          {sent.map((r) => (
+            <Card key={r.id} className="py-3 text-sm">
+              <PersonLink user={r.to} /> <span className="text-muted">· waiting</span>
+            </Card>
+          ))}
         </section>
       )}
     </main>

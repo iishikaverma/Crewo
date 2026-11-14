@@ -38,8 +38,8 @@ assert.equal(peopleFit(base({ role: "backend" }), filt({ role: "backend" })), 10
 assert.equal(peopleFit(base({ location: "Delhi" }), filt({ location: "delhi" })), 100);
 
 // openTo intersection
-assert.equal(peopleFit(base({ openTo: ["hackathon"] }), filt({ openTo: ["hackathon", "study"] })), 100);
-assert.equal(peopleFit(base({ openTo: ["project"] }), filt({ openTo: ["study"] })), 0);
+assert.equal(peopleFit(base({ openTo: ["hackathon"] }), filt({ openTo: ["hackathon", "project"] })), 100);
+assert.equal(peopleFit(base({ openTo: ["project"] }), filt({ openTo: ["internship"] })), 0);
 
 // no active filter → 0 and hasActiveFilter false
 assert.equal(hasActiveFilter(filt()), false);

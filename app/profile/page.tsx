@@ -2,10 +2,7 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/user";
 import { SKILLS, ROLES, OPEN_TO } from "@/lib/skills";
 import { updateProfile } from "./actions";
-
-const input =
-  "w-full rounded-md border border-gray-300 bg-transparent p-2 text-sm dark:border-gray-700";
-const label = "text-sm font-medium text-gray-600 dark:text-gray-400";
+import { PageHeader, Field, Input, Select, Textarea, Button, Card } from "@/components/ui";
 
 export default async function ProfilePage() {
   const me = await currentUser();
@@ -16,120 +13,89 @@ export default async function ProfilePage() {
   const openToSet = new Set(me.openTo);
 
   return (
-    <main>
-      <h1 className="mb-1 text-xl font-bold">Your profile</h1>
-      <p className="mb-6 text-sm text-gray-500">
-        Skills, role and experience power the People directory and your match score.
-      </p>
+    <main className="flex flex-col gap-6">
+      <PageHeader
+        title="Your profile"
+        subtitle="Skills, role and experience power the People directory and your match score."
+      />
 
       <form action={updateProfile} className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1">
-          <label className={label}>Name</label>
-          <input name="name" defaultValue={me.name ?? ""} className={input} required />
-        </div>
+        <Field label="Name">
+          <Input name="name" defaultValue={me.name ?? ""} required />
+        </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1">
-            <label className={label}>Role</label>
-            <select name="role" defaultValue={me.role ?? ""} className={input}>
+          <Field label="Role">
+            <Select name="role" defaultValue={me.role ?? ""}>
               <option value="">—</option>
               {ROLES.map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className={label}>Years of experience</label>
-            <input
-              name="yearsExperience"
-              type="number"
-              min={0}
-              max={50}
-              defaultValue={me.yearsExperience ?? ""}
-              className={input}
-            />
-          </div>
+            </Select>
+          </Field>
+          <Field label="Years of experience">
+            <Input name="yearsExperience" type="number" min={0} max={50} defaultValue={me.yearsExperience ?? ""} />
+          </Field>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1">
-            <label className={label}>Location</label>
-            <input name="location" defaultValue={me.location ?? ""} placeholder="Delhi" className={input} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className={label}>Year / branch</label>
+          <Field label="Location">
+            <Input name="location" defaultValue={me.location ?? ""} placeholder="Delhi" />
+          </Field>
+          <Field label="Year / branch">
             <div className="flex gap-2">
-              <input name="year" defaultValue={me.year ?? ""} placeholder="3" className={input} />
-              <input name="branch" defaultValue={me.branch ?? ""} placeholder="CSE" className={input} />
+              <Input name="year" defaultValue={me.year ?? ""} placeholder="3" />
+              <Input name="branch" defaultValue={me.branch ?? ""} placeholder="CSE" />
             </div>
-          </div>
+          </Field>
         </div>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className={label}>Stack / skills</legend>
-          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-muted">Stack / skills</span>
+          <div className="grid grid-cols-3 gap-x-3 gap-y-1.5 sm:grid-cols-4">
             {SKILLS.map((s) => (
-              <label key={s} className="flex items-center gap-1.5 text-sm">
-                <input type="checkbox" name="skills" value={s} defaultChecked={skillSet.has(s)} />
+              <label key={s} className="flex items-center gap-1.5 font-mono text-xs text-muted">
+                <input type="checkbox" name="skills" value={s} defaultChecked={skillSet.has(s)} className="accent-[var(--accent)]" />
                 {s}
               </label>
             ))}
           </div>
-          <input
-            name="skillsOther"
-            defaultValue={otherSkills.join(", ")}
-            placeholder="other skills, comma-separated"
-            className={input}
-          />
-        </fieldset>
+          <Input name="skillsOther" defaultValue={otherSkills.join(", ")} placeholder="other skills, comma-separated" />
+        </div>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className={label}>Open to</legend>
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-muted">Open to</span>
           <div className="flex flex-wrap gap-3">
             {OPEN_TO.map((o) => (
-              <label key={o} className="flex items-center gap-1.5 text-sm">
-                <input type="checkbox" name="openTo" value={o} defaultChecked={openToSet.has(o)} />
+              <label key={o} className="flex items-center gap-1.5 text-sm text-muted">
+                <input type="checkbox" name="openTo" value={o} defaultChecked={openToSet.has(o)} className="accent-[var(--accent)]" />
                 {o}
               </label>
             ))}
           </div>
-        </fieldset>
-
-        <div className="flex flex-col gap-1">
-          <label className={label}>Looking for</label>
-          <input
-            name="lookingFor"
-            defaultValue={me.lookingFor ?? ""}
-            placeholder="backend + designer for a weekend hack"
-            className={input}
-          />
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className={label}>About / bio</label>
-          <textarea name="bio" defaultValue={me.bio ?? ""} rows={3} className={input} />
-        </div>
+        <Field label="Looking for">
+          <Input name="lookingFor" defaultValue={me.lookingFor ?? ""} placeholder="backend + designer for a weekend hack" />
+        </Field>
 
-        <fieldset className="flex flex-col gap-4 rounded-md border border-dashed border-gray-300 p-4 dark:border-gray-700">
-          <legend className="px-1 text-xs text-gray-500">
+        <Field label="About / bio">
+          <Textarea name="bio" defaultValue={me.bio ?? ""} rows={3} />
+        </Field>
+
+        <Card className="flex flex-col gap-4">
+          <p className="text-xs text-muted">
             Links — GitHub is auto-fetched (avatar, bio, top repos). LinkedIn revealed on connect.
-          </legend>
-          <div className="flex flex-col gap-1">
-            <label className={label}>GitHub URL</label>
-            <input name="githubUrl" defaultValue={me.githubUrl ?? ""} placeholder="https://github.com/you" className={input} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className={label}>LinkedIn URL</label>
-            <input name="linkedinUrl" defaultValue={me.linkedinUrl ?? ""} className={input} />
-          </div>
-        </fieldset>
+          </p>
+          <Field label="GitHub URL">
+            <Input name="githubUrl" defaultValue={me.githubUrl ?? ""} placeholder="https://github.com/you" />
+          </Field>
+          <Field label="LinkedIn URL">
+            <Input name="linkedinUrl" defaultValue={me.linkedinUrl ?? ""} />
+          </Field>
+        </Card>
 
-        <button
-          type="submit"
-          className="self-start rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-black"
-        >
-          Save profile
-        </button>
+        <Button type="submit" className="self-start">Save profile</Button>
       </form>
     </main>
   );

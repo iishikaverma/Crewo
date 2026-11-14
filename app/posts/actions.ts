@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUserId, parseSkills } from "@/lib/user";
 
-const TYPES = ["hackathon", "project", "study"] as const;
+const TYPES = ["hackathon", "project"] as const;
 type PostType = (typeof TYPES)[number];
 
 export async function createPost(formData: FormData) {
