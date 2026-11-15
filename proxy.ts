@@ -4,8 +4,8 @@ import { auth } from "@/auth";
 // Protect everything except sign-in, auth API, and static assets.
 export default auth((req) => {
   const { pathname } = req.nextUrl;
-  // /api/* handle their own auth (so fetches get JSON, not a redirect)
-  const isPublic = pathname === "/signin" || pathname.startsWith("/api");
+  // "/" is the public landing; /api/* handle their own auth (JSON, not a redirect)
+  const isPublic = pathname === "/" || pathname === "/signin" || pathname.startsWith("/api");
   if (!req.auth && !isPublic) {
     return Response.redirect(new URL("/signin", req.nextUrl));
   }

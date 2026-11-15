@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { postMatch } from "@/lib/matchScore";
 import { PostCard } from "@/components/PostCard";
 import { EmptyState } from "@/components/ui";
+import { Landing } from "@/components/Landing";
 
 const TYPES = [
   { v: "", label: "All" },
@@ -14,7 +14,7 @@ const TYPES = [
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const me = await currentUser();
-  if (!me) redirect("/signin");
+  if (!me) return <Landing />;
 
   const sp = await searchParams;
   const typeRaw = Array.isArray(sp.type) ? sp.type[0] : sp.type;
