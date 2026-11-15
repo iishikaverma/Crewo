@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import Link from "next/link";
+import { toast } from "sonner";
 import { respondConnect } from "./actions";
 import { Card, Button, EmptyState } from "@/components/ui";
 import { burstConfetti } from "@/components/confettiBurst";
@@ -55,11 +56,13 @@ export function ConnectionsClient({
       setConnections((cs) => [{ id: r.id, other: r.from }, ...cs]);
     });
     respondConnect(r.id, "accepted");
+    toast.success(`Connected with ${r.from.name ?? "them"} 🎉`);
   }
 
   function decline(id: string) {
     withTransition(() => setRequests((rs) => rs.filter((x) => x.id !== id)));
     respondConnect(id, "declined");
+    toast("Request declined");
   }
 
   return (

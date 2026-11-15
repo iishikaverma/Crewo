@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { signOut } from "@/auth";
 import { Avatar, Button } from "@/components/ui";
 import { CmdKButton } from "@/components/CmdKButton";
+import { MobileNav } from "@/components/MobileNav";
 
 export async function Nav() {
   const user = await currentUser();
@@ -12,6 +13,11 @@ export async function Nav() {
   const pendingConnects = await prisma.connectRequest.count({
     where: { toId: user.id, status: "pending" },
   });
+
+  async function signOutAction() {
+    "use server";
+    await signOut({ redirectTo: "/signin" });
+  }
 
   const link = "text-sm text-muted transition-colors hover:text-fg";
 
@@ -23,33 +29,31 @@ export async function Nav() {
             <span className="h-5 w-5 rounded-[5px] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] shadow-[0_0_14px_-2px_var(--accent-glow)]" />
             Crewo
           </Link>
-          <Link href="/" className={link}>Browse</Link>
-          <Link href="/people" className={link}>People</Link>
-          <Link href="/connections" className={`${link} flex items-center gap-1.5`}>
-            Connections
-            {pendingConnects > 0 && (
-              <span className="grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-fg">
-                {pendingConnects}
-              </span>
-            )}
-          </Link>
-          <Link href="/posts/new" className={link}>New post</Link>
+          <span className="hidden items-center gap-5 sm:flex">
+            <Link href="/" className={link}>Browse</Link>
+            <Link href="/people" className={link}>People</Link>
+            <Link href="/connections" className={`${link} flex items-center gap-1.5`}>
+              Connections
+              {pendingConnects > 0 && (
+                <span className="grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-fg">
+                  {pendingConnects}
+                </span>
+              )}
+            </Link>
+            <Link href="/posts/new" className={link}>New post</Link>
+          </span>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <CmdKButton />
           <Link href="/profile" className="flex items-center gap-2">
             <Avatar src={user.image} name={user.name} size={26} />
             <span className="hidden text-sm text-muted sm:inline">{user.name ?? user.email}</span>
           </Link>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/signin" });
-            }}
-          >
+          <form action={signOutAction} className="hidden sm:block">
             <Button variant="ghost" className="px-2.5 py-1.5 text-xs">Sign out</Button>
           </form>
+          <MobileNav signOutAction={signOutAction} pending={pendingConnects} />
         </div>
       </div>
     </header>

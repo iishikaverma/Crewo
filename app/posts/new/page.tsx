@@ -1,5 +1,6 @@
 import { createPost } from "../actions";
-import { PageHeader, Field, Input, Select, Textarea, Button } from "@/components/ui";
+import { PageHeader, Field, Input, Select, Textarea } from "@/components/ui";
+import { ToastButton } from "@/components/ToastButton";
 
 export default function NewPostPage() {
   return (
@@ -43,7 +44,7 @@ export default function NewPostPage() {
           <Input name="happeningAt" type="date" />
         </Field>
 
-        <Button type="submit" className="self-start">Post it</Button>
+        <ToastButton size="md" message="Posting your need…" className="self-start">Post it</ToastButton>
       </form>
     </main>
   );

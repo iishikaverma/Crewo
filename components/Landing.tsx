@@ -163,7 +163,7 @@ export function Landing() {
         <div className="grid gap-4 md:grid-cols-3">
           {/* Match — spans 2 cols */}
           <Card className="glow-card relative overflow-hidden md:col-span-2">
-            <div className="flex items-center gap-5">
+            <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
               <FitRing fit={88} size={72} />
               <div>
                 <h3 className="font-semibold tracking-tight">Complementary match, explained</h3>

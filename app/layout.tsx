@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Spotlight } from "@/components/Spotlight";
 import { CommandPalette } from "@/components/CommandPalette";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
+        <Toaster theme="dark" position="top-center" richColors toastOptions={{ style: { background: "var(--surface)", border: "1px solid var(--border-strong)", color: "var(--fg)" } }} />
         <div className="aurora" aria-hidden />
         <Spotlight />
         <CommandPalette />

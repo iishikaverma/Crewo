@@ -24,7 +24,9 @@ const intOrNull = (v: FormDataEntryValue | null) => {
   return Number.isFinite(n) ? Math.max(0, Math.min(50, n)) : null;
 };
 
-export async function updateProfile(formData: FormData) {
+export type ActionState = { ok: boolean; message: string } | null;
+
+export async function updateProfile(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const id = await requireUserId();
 
   // skills = checked options + "other" free-text, deduped lowercase
@@ -67,4 +69,5 @@ export async function updateProfile(formData: FormData) {
   revalidatePath("/profile");
   revalidatePath("/");
   revalidatePath(`/u/${id}`);
+  return { ok: true, message: gh ? "Profile saved · GitHub synced ✓" : "Profile saved ✓" };
 }

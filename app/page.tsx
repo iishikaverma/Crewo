@@ -5,6 +5,7 @@ import { postMatch } from "@/lib/matchScore";
 import { PostCard } from "@/components/PostCard";
 import { EmptyState } from "@/components/ui";
 import { Landing } from "@/components/Landing";
+import { WelcomeToast } from "@/components/WelcomeToast";
 
 const TYPES = [
   { v: "", label: "All" },
@@ -58,6 +59,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 
   return (
     <main className="flex flex-col gap-10">
+      <WelcomeToast name={me.name ?? "there"} />
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold tracking-tight">Open posts</h2>

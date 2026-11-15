@@ -8,7 +8,7 @@ import type { GithubRepo, GithubStats } from "@/lib/github";
 import { sendConnect, respondConnect } from "@/app/connections/actions";
 import { Avatar, Button, Card } from "@/components/ui";
 import { Confetti } from "@/components/Confetti";
-import { ConfettiButton } from "@/components/ConfettiButton";
+import { ToastButton } from "@/components/ToastButton";
 
 function ContactLinks({ githubUrl, linkedinUrl }: { githubUrl: string | null; linkedinUrl: string | null }) {
   const links = [
@@ -102,7 +102,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
               </p>
               <div className="flex gap-2">
                 <form action={respondConnect.bind(null, incoming.id, "accepted")}>
-                  <ConfettiButton>Accept</ConfettiButton>
+                  <ToastButton confetti message={`Connected with ${user.name ?? "them"} 🎉`}>Accept</ToastButton>
                 </form>
                 <form action={respondConnect.bind(null, incoming.id, "declined")}>
                   <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
@@ -125,7 +125,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
                 placeholder="Say why you'd like to connect (1–2 lines)."
                 className="w-full rounded-[10px] border border-border bg-surface px-3 py-2 text-sm text-fg placeholder:text-faint focus:border-accent"
               />
-              <Button type="submit" className="self-start">Request to connect</Button>
+              <ToastButton message="Connect request sent ✓" className="self-start">Request to connect</ToastButton>
             </form>
           )}
         </Card>

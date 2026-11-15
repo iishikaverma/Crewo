@@ -70,6 +70,7 @@ body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden; /* the landing's full-bleed w-screen must not leak a sideways scroll */
   /* subtle top glow for premium depth */
   background-image: radial-gradient(
     60rem 32rem at 50% -12rem,

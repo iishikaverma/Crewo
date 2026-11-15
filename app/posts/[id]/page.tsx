@@ -7,7 +7,7 @@ import { requestToJoin, respondToRequest, setPostStatus } from "../actions";
 import { Card, Button, Badge, Textarea } from "@/components/ui";
 import { TeamComposition } from "@/components/TeamComposition";
 import { Confetti } from "@/components/Confetti";
-import { ConfettiButton } from "@/components/ConfettiButton";
+import { ToastButton } from "@/components/ToastButton";
 
 const TYPE_LABEL: Record<string, string> = {
   hackathon: "🏆 Hackathon",
@@ -117,7 +117,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                     {r.message && <p className="mt-2 text-sm text-muted">{r.message}</p>}
                     <div className="mt-3 flex gap-2">
                       <form action={respondToRequest.bind(null, r.id, "accepted")}>
-                        <ConfettiButton>Accept</ConfettiButton>
+                        <ToastButton confetti message={`Accepted ${r.requester.name ?? "them"} ✓`}>Accept</ToastButton>
                       </form>
                       <form action={respondToRequest.bind(null, r.id, "declined")}>
                         <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
@@ -151,7 +151,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
             <form action={requestToJoin.bind(null, post.id)} className="flex flex-col gap-3">
               <span className="text-sm font-medium">Request to join</span>
               <Textarea name="message" rows={3} placeholder="Say what you bring (1–2 lines)." />
-              <Button type="submit" className="self-start">Send request</Button>
+              <ToastButton message="Request sent ✓" className="self-start">Send request</ToastButton>
             </form>
           )}
 
@@ -179,9 +179,9 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
               {post.status === "open" && (
                 <form action={requestToJoin.bind(null, post.id)} className="flex flex-col gap-2">
                   <Textarea name="message" rows={2} placeholder="Try again with a note." />
-                  <Button type="submit" variant="secondary" className="self-start px-3 py-1.5 text-xs">
+                  <ToastButton variant="secondary" message="Request sent ✓" className="self-start">
                     Request again
-                  </Button>
+                  </ToastButton>
                 </form>
               )}
             </div>
