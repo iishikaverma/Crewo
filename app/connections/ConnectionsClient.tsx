@@ -5,7 +5,7 @@ import { flushSync } from "react-dom";
 import Link from "next/link";
 import { respondConnect } from "./actions";
 import { Card, Button, EmptyState } from "@/components/ui";
-import { burstConfetti } from "@/components/confetti";
+import { burstConfetti } from "@/components/confettiBurst";
 
 type Person = {
   id: string;

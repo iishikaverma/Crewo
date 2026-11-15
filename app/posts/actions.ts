@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUserId, parseSkills } from "@/lib/user";
+import { sendEmail, emailLayout, appUrl } from "@/lib/email";
 
 const TYPES = ["hackathon", "project"] as const;
 type PostType = (typeof TYPES)[number];
@@ -47,7 +48,10 @@ export async function requestToJoin(postId: string, formData: FormData) {
   const requesterId = await requireUserId();
   const message = String(formData.get("message") ?? "").trim();
 
-  const post = await prisma.post.findUnique({ where: { id: postId } });
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: { author: { select: { email: true, name: true } } },
+  });
   if (!post) throw new Error("Post not found");
   if (post.authorId === requesterId) throw new Error("You can't join your own post");
   if (post.status !== "open") throw new Error("This post is closed");
@@ -58,6 +62,19 @@ export async function requestToJoin(postId: string, formData: FormData) {
     update: { message, status: "pending" },
     create: { postId, requesterId, message },
   });
+
+  const me = await prisma.user.findUnique({ where: { id: requesterId }, select: { name: true } });
+  await sendEmail({
+    to: post.author.email,
+    subject: `New request to join "${post.title}"`,
+    html: emailLayout(
+      "Someone wants to join your post",
+      `${me?.name ?? "A student"} requested to join <b>${post.title}</b>${message ? `: "${message}"` : "."}`,
+      "View request",
+      appUrl(`/posts/${postId}`)
+    ),
+  });
+
   revalidatePath(`/posts/${postId}`);
   revalidatePath("/");
 }
@@ -69,11 +86,28 @@ export async function respondToRequest(
   const userId = await requireUserId();
   const req = await prisma.joinRequest.findUnique({
     where: { id: requestId },
-    include: { post: { select: { authorId: true } } },
+    include: {
+      post: { select: { authorId: true, title: true } },
+      requester: { select: { email: true } },
+    },
   });
   if (!req || req.post.authorId !== userId) throw new Error("Not allowed");
 
   await prisma.joinRequest.update({ where: { id: requestId }, data: { status } });
+
+  if (status === "accepted") {
+    await sendEmail({
+      to: req.requester.email,
+      subject: `You're in — "${req.post.title}"`,
+      html: emailLayout(
+        "🎉 Your request was accepted",
+        `You've been accepted to <b>${req.post.title}</b>. Open the post to see the contact details.`,
+        "See your team",
+        appUrl(`/posts/${req.postId}`)
+      ),
+    });
+  }
+
   revalidatePath(`/posts/${req.postId}`);
   revalidatePath("/");
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { burstConfetti } from "./confetti";
+import { burstConfetti } from "./confettiBurst";
 
 // Fires a one-shot burst on mount, deduped per key per session (for the person
 // who lands on a success state, e.g. "You're in").

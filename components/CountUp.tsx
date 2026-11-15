@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export function CountUp({ value, duration = 900 }: { value: number; duration?: number }) {
   const [n, setN] = useState(0);
-  const started = useRef(false);
 
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       setN(value);
       return;

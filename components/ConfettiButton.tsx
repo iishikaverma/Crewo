@@ -1,6 +1,6 @@
 "use client";
 
-import { burstConfetti } from "./confetti";
+import { burstConfetti } from "./confettiBurst";
 
 // A submit button that fires confetti from the click point, then submits the form.
 export function ConfettiButton({
