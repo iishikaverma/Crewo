@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { SKILLS, ROLES, OPEN_TO } from "@/lib/skills";
 import { updateProfile, type ActionState } from "./actions";
 import { Field, Input, Select, Textarea, Button, Card } from "@/components/ui";
+import { TagInput } from "@/components/TagInput";
 
 type U = {
   name: string | null; role: string | null; yearsExperience: number | null;
@@ -73,7 +74,7 @@ export function ProfileForm({ user }: { user: U }) {
             </label>
           ))}
         </div>
-        <Input name="skillsOther" defaultValue={otherSkills.join(", ")} placeholder="other skills, comma-separated" />
+        <TagInput name="skillsOther" defaultValue={otherSkills} placeholder="other skill, then press enter" />
       </div>
 
       <div className="flex flex-col gap-2">

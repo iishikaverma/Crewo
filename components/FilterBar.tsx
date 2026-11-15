@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SKILLS, ROLES, OPEN_TO } from "@/lib/skills";
 import type { PeopleFilter } from "@/lib/matchScore";
 import { Card, Field, Input, Select, Button } from "@/components/ui";
+import { TagInput } from "@/components/TagInput";
 
 // GET form → filters live in the URL query string (shareable, no client JS).
 export function FilterBar({ filter }: { filter: PeopleFilter }) {
@@ -39,7 +40,7 @@ export function FilterBar({ filter }: { filter: PeopleFilter }) {
               </label>
             ))}
           </div>
-          <Input name="skillsOther" defaultValue={otherSkills.join(", ")} placeholder="other skills, comma-separated (e.g. rust, svelte)" />
+          <TagInput name="skillsOther" defaultValue={otherSkills} placeholder="other stack, then enter (e.g. rust)" />
         </div>
 
         <div className="flex flex-col gap-2">
