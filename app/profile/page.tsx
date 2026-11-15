@@ -26,7 +26,7 @@ export default async function ProfilePage() {
           name: me.name, role: me.role, yearsExperience: me.yearsExperience,
           location: me.location, year: me.year, branch: me.branch,
           skills: me.skills, openTo: me.openTo, lookingFor: me.lookingFor, bio: me.bio,
-          githubUrl: me.githubUrl, linkedinUrl: me.linkedinUrl,
+          githubBio: me.githubBio, githubUrl: me.githubUrl, linkedinUrl: me.linkedinUrl,
         }}
       />
     </main>

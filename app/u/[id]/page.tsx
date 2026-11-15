@@ -68,7 +68,19 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
         </div>
       </header>
 
-      {user.bio && <p className="whitespace-pre-wrap text-fg/90">{user.bio}</p>}
+      {user.githubBio && (
+        <div>
+          <p className="mb-1 text-xs font-medium text-muted">Bio · from GitHub</p>
+          <p className="text-fg/90">{user.githubBio}</p>
+        </div>
+      )}
+
+      {user.bio && (
+        <div>
+          <p className="mb-1 text-xs font-medium text-muted">Description</p>
+          <p className="whitespace-pre-wrap text-fg/90">{user.bio}</p>
+        </div>
+      )}
 
       {user.skills.length > 0 && (
         <div>
@@ -84,7 +96,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
         </div>
       )}
 
-      <GithubHighlights githubUrl={user.githubUrl} githubBio={user.githubBio} repos={repos} stats={githubStats} />
+      <GithubHighlights githubUrl={user.githubUrl} repos={repos} stats={githubStats} />
 
       {!isMe && me && (
         <Card>

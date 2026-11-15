@@ -12,16 +12,14 @@ function isActive(lastPushedAt: string | null) {
 
 export function GithubHighlights({
   githubUrl,
-  githubBio,
   repos,
   stats,
 }: {
   githubUrl: string | null;
-  githubBio: string | null;
   repos: GithubRepo[];
   stats: GithubStats | null;
 }) {
-  const hasAny = githubBio || repos.length > 0 || stats;
+  const hasAny = repos.length > 0 || stats;
   if (!githubUrl && !hasAny) return null;
 
   const handle = githubUrl
@@ -80,8 +78,6 @@ export function GithubHighlights({
           </div>
         </div>
       )}
-
-      {githubBio && <p className="mb-3 text-sm text-muted">{githubBio}</p>}
 
       {repos.length > 0 && (
         <ul className="flex flex-col gap-2">

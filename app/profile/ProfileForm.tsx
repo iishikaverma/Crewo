@@ -12,7 +12,7 @@ type U = {
   name: string | null; role: string | null; yearsExperience: number | null;
   location: string | null; year: string | null; branch: string | null;
   skills: string[]; openTo: string[]; lookingFor: string | null; bio: string | null;
-  githubUrl: string | null; linkedinUrl: string | null;
+  githubBio: string | null; githubUrl: string | null; linkedinUrl: string | null;
 };
 
 function SaveButton() {
@@ -93,8 +93,17 @@ export function ProfileForm({ user }: { user: U }) {
         <Input name="lookingFor" defaultValue={user.lookingFor ?? ""} placeholder="backend + designer for a weekend hack" />
       </Field>
 
-      <Field label="About / bio">
-        <Textarea name="bio" defaultValue={user.bio ?? ""} rows={3} />
+      {user.githubBio && (
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-muted">Bio · from GitHub</span>
+          <p className="rounded-[10px] border border-dashed border-border bg-surface px-3 py-2 text-sm text-muted">
+            {user.githubBio}
+          </p>
+        </div>
+      )}
+
+      <Field label="Description">
+        <Textarea name="bio" defaultValue={user.bio ?? ""} rows={3} placeholder="Write your own — what you're building, what you're into, what you want from a team." />
       </Field>
 
       <Card className="flex flex-col gap-4">
