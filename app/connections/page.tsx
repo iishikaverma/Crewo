@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { currentUser } from "@/lib/user";
+import { requireOnboarded } from "@/lib/user";
 import { PageHeader } from "@/components/ui";
 import { ConnectionsClient } from "./ConnectionsClient";
 
@@ -10,8 +9,7 @@ const person = (u: {
 }) => ({ id: u.id, name: u.name, email: u.email, role: u.role, githubUrl: u.githubUrl, linkedinUrl: u.linkedinUrl });
 
 export default async function ConnectionsPage() {
-  const me = await currentUser();
-  if (!me) redirect("/signin");
+  const me = await requireOnboarded();
 
   const [incoming, sent, accepted] = await Promise.all([
     prisma.connectRequest.findMany({

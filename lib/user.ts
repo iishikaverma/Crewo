@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -8,6 +9,15 @@ export async function currentUser() {
   const id = session?.user?.id;
   if (!id) return null;
   return prisma.user.findUnique({ where: { id } });
+}
+
+/** Gate app pages: must be signed in AND have a real name set.
+ *  Sends unauthenticated → /signin, and name-less users → /profile to finish setup. */
+export async function requireOnboarded() {
+  const me = await currentUser();
+  if (!me) redirect("/signin");
+  if (!me.name?.trim()) redirect("/profile");
+  return me;
 }
 
 export async function requireUserId() {

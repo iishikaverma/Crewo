@@ -15,6 +15,14 @@ const USERS = [
   { email: "dev@college.edu", name: "Dev", branch: "IT", year: "3", role: "devops", location: "Delhi", yearsExperience: 3, openTo: ["hackathon", "internship"], bio: "Infra/DevOps. Docker, AWS, CI/CD.", skills: ["docker", "aws", "go"], lookingFor: "infra-heavy hackathon", githubUrl: "https://github.com/mitchellh", linkedinUrl: "https://linkedin.com/in/dev" },
   { email: "sara@college.edu", name: "Sara", branch: "Design", year: "3", role: "designer", location: "Mumbai", yearsExperience: 2, openTo: ["project", "hackathon"], bio: "UX research + prototyping.", skills: ["figma", "ui/ux"], lookingFor: "a dev team to prototype with" },
   { email: "arjun@college.edu", name: "Arjun", branch: "CSE", year: "1", role: "full-stack", location: "Delhi", yearsExperience: 0, openTo: ["project", "hackathon"], bio: "First-year, building side projects.", skills: ["java", "javascript"], lookingFor: "a side project to build", githubUrl: "https://github.com/arjun" },
+
+  // Fresh GitHub signups with NO name yet — they hit the onboarding gate on login.
+  { email: "newbie1@college.edu", githubUrl: "https://github.com/tj" },
+  { email: "newbie2@college.edu", githubUrl: "https://github.com/addyosmani" },
+  { email: "newbie3@college.edu", githubUrl: "https://github.com/wesbos" },
+  { email: "newbie4@college.edu", githubUrl: "https://github.com/kentcdodds" },
+  { email: "newbie5@college.edu", githubUrl: "https://github.com/yyx990803" },
+  { email: "newbie6@college.edu" },
 ];
 
 async function main() {

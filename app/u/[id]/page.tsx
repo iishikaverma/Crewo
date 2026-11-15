@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { currentUser } from "@/lib/user";
+import { requireOnboarded } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
 import { GithubHighlights } from "@/components/GithubHighlights";
 import type { GithubRepo, GithubStats } from "@/lib/github";
@@ -29,7 +29,7 @@ function ContactLinks({ githubUrl, linkedinUrl }: { githubUrl: string | null; li
 
 export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
   const { id } = await params;
-  const me = await currentUser();
+  const me = await requireOnboarded();
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) notFound();
 

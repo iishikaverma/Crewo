@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { currentUser } from "@/lib/user";
+import { requireOnboarded } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
 import { requestToJoin, respondToRequest, setPostStatus } from "../actions";
 import { Card, Button, Badge, Textarea } from "@/components/ui";
@@ -35,8 +35,7 @@ function Contact({ u }: { u: Contactable }) {
 
 export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
   const { id } = await params;
-  const me = await currentUser();
-  if (!me) redirect("/signin");
+  const me = await requireOnboarded();
 
   const post = await prisma.post.findUnique({
     where: { id },

@@ -1,8 +1,10 @@
 import { createPost } from "../actions";
+import { requireOnboarded } from "@/lib/user";
 import { PageHeader, Field, Input, Select, Textarea } from "@/components/ui";
 import { ToastButton } from "@/components/ToastButton";
 
-export default function NewPostPage() {
+export default async function NewPostPage() {
+  await requireOnboarded();
   return (
     <main className="flex flex-col gap-6">
       <PageHeader title="Post a need" subtitle="Tell people what you're building and who you need." />

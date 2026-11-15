@@ -35,8 +35,8 @@ export function ProfileForm({ user }: { user: U }) {
 
   return (
     <form action={action} className="flex flex-col gap-5">
-      <Field label="Name">
-        <Input name="name" defaultValue={user.name ?? ""} required />
+      <Field label="Full name">
+        <Input name="name" defaultValue={user.name ?? ""} required placeholder="e.g. Ishika Verma" />
       </Field>
 
       <div className="grid grid-cols-2 gap-4">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/user";
 import { postMatch } from "@/lib/matchScore";
@@ -16,6 +17,7 @@ const TYPES = [
 export default async function Home({ searchParams }: PageProps<"/">) {
   const me = await currentUser();
   if (!me) return <Landing />;
+  if (!me.name?.trim()) redirect("/profile");
 
   const sp = await searchParams;
   const typeRaw = Array.isArray(sp.type) ? sp.type[0] : sp.type;

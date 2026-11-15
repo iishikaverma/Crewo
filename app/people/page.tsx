@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { currentUser } from "@/lib/user";
+import { requireOnboarded, parseSkills } from "@/lib/user";
 import { FilterBar } from "@/components/FilterBar";
 import { ProfileCard } from "@/components/ProfileCard";
 import { PageHeader } from "@/components/ui";
@@ -20,14 +19,20 @@ const asString = (v: string | string[] | undefined) => {
 };
 
 export default async function PeoplePage({ searchParams }: PageProps<"/people">) {
-  const me = await currentUser();
-  if (!me) redirect("/signin");
+  const me = await requireOnboarded();
 
   const sp = await searchParams;
   const minYearsRaw = asString(sp.minYears);
   const minYearsNum = minYearsRaw != null ? Number(minYearsRaw) : NaN;
+  // checked options + typed "other" skills, all lowercased & deduped (case-insensitive)
+  const skills = [
+    ...new Set([
+      ...asArray(sp.skills).map((s) => String(s).toLowerCase()),
+      ...parseSkills(asString(sp.skillsOther)),
+    ]),
+  ];
   const filter: PeopleFilter = {
-    skills: asArray(sp.skills).map(String),
+    skills,
     role: asString(sp.role),
     minYears: Number.isFinite(minYearsNum) ? minYearsNum : null,
     location: asString(sp.location),

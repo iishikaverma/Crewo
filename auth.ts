@@ -55,14 +55,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // GitHub (JWT, no adapter): upsert a User by email so the app has a row.
       const email = user.email;
       if (email) {
-        const gh = profile as { html_url?: string; login?: string } | undefined;
+        const gh = profile as { html_url?: string; login?: string; name?: string | null } | undefined;
         const githubUrl = gh?.html_url ?? (gh?.login ? `https://github.com/${gh.login}` : undefined);
+        // Use GitHub's REAL name only (not the login handle). Null -> onboarding gate makes them enter it.
+        const realName = gh?.name?.trim() || null;
         const dbUser = await prisma.user.upsert({
           where: { email },
           update: {},
           create: {
             email,
-            name: user.name ?? null,
+            name: realName,
             image: user.image ?? null,
             githubUrl: githubUrl ?? null,
           },

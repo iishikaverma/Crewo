@@ -7,6 +7,7 @@ import { Card, Field, Input, Select, Button } from "@/components/ui";
 export function FilterBar({ filter }: { filter: PeopleFilter }) {
   const skillSet = new Set(filter.skills);
   const openSet = new Set(filter.openTo);
+  const otherSkills = filter.skills.filter((s) => !(SKILLS as readonly string[]).includes(s));
 
   return (
     <Card>
@@ -38,6 +39,7 @@ export function FilterBar({ filter }: { filter: PeopleFilter }) {
               </label>
             ))}
           </div>
+          <Input name="skillsOther" defaultValue={otherSkills.join(", ")} placeholder="other skills, comma-separated (e.g. rust, svelte)" />
         </div>
 
         <div className="flex flex-col gap-2">
