@@ -5,8 +5,8 @@ import { ConnectionsClient } from "./ConnectionsClient";
 
 const person = (u: {
   id: string; name: string | null; email: string; role: string | null;
-  githubUrl: string | null; linkedinUrl: string | null;
-}) => ({ id: u.id, name: u.name, email: u.email, role: u.role, githubUrl: u.githubUrl, linkedinUrl: u.linkedinUrl });
+  image: string | null; githubUrl: string | null; linkedinUrl: string | null;
+}) => ({ id: u.id, name: u.name, email: u.email, role: u.role, image: u.image, githubUrl: u.githubUrl, linkedinUrl: u.linkedinUrl });
 
 export default async function ConnectionsPage() {
   const me = await requireOnboarded();

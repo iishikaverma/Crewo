@@ -2,11 +2,12 @@ import { createPost } from "../actions";
 import { requireOnboarded } from "@/lib/user";
 import { PageHeader, Field, Input, Select, Textarea } from "@/components/ui";
 import { ToastButton } from "@/components/ToastButton";
+import { TagInput } from "@/components/TagInput";
 
 export default async function NewPostPage() {
   await requireOnboarded();
   return (
-    <main className="flex flex-col gap-6">
+    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <PageHeader title="Post a need" subtitle="Tell people what you're building and who you need." />
 
       <form action={createPost} className="flex flex-col gap-5">
@@ -38,8 +39,8 @@ export default async function NewPostPage() {
           <Textarea name="expecting" rows={2} placeholder="Someone who can own the backend, commits for the full weekend, ships fast." />
         </Field>
 
-        <Field label="Skills needed (comma-separated)">
-          <Input name="neededSkills" placeholder="node, postgres, figma" />
+        <Field label="Skills needed">
+          <TagInput name="neededSkills" placeholder="node, then press enter" />
         </Field>
 
         <Field label="When (optional)">
