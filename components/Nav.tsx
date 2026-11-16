@@ -22,7 +22,7 @@ export async function Nav() {
   const link = "text-sm text-muted transition-colors hover:text-fg";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md lg:hidden">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <nav className="flex items-center gap-5">
           <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">

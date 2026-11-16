@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Nav } from "@/components/Nav";
+import { Sidebar } from "@/components/Sidebar";
 import { Spotlight } from "@/components/Spotlight";
 import { CommandPalette } from "@/components/CommandPalette";
 
@@ -32,8 +33,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="aurora" aria-hidden />
         <Spotlight />
         <CommandPalette />
-        <Nav />
-        <div className="mx-auto w-full max-w-3xl px-4 py-8">{children}</div>
+        <div className="lg:flex">
+          <Sidebar />
+          <div className="min-w-0 flex-1">
+            <Nav />
+            <div className="mx-auto w-full max-w-6xl px-4 py-6 lg:px-8 lg:py-8">{children}</div>
+          </div>
+        </div>
       </body>
     </html>
   );

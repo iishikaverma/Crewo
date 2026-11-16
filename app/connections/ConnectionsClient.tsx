@@ -56,7 +56,7 @@ export function ConnectionsClient({
       setConnections((cs) => [{ id: r.id, other: r.from }, ...cs]);
     });
     respondConnect(r.id, "accepted");
-    toast.success(`Connected with ${r.from.name ?? "them"} 🎉`);
+    toast.success(`Connected with ${r.from.name ?? "them"}`);
   }
 
   function decline(id: string) {
@@ -74,7 +74,8 @@ export function ConnectionsClient({
         {requests.length === 0 ? (
           <EmptyState>No pending requests.</EmptyState>
         ) : (
-          requests.map((r) => (
+          <div className="grid gap-3 sm:grid-cols-2">
+          {requests.map((r) => (
             <div key={r.id} style={{ viewTransitionName: `conn-${r.id}` }}>
               <Card>
                 <p className="text-sm">
@@ -95,7 +96,8 @@ export function ConnectionsClient({
                 </div>
               </Card>
             </div>
-          ))
+          ))}
+          </div>
         )}
       </section>
 
@@ -106,7 +108,8 @@ export function ConnectionsClient({
             None yet. <Link href="/people" className="text-accent-2 hover:underline">Find people</Link>.
           </EmptyState>
         ) : (
-          connections.map((c) => (
+          <div className="grid gap-3 sm:grid-cols-2">
+          {connections.map((c) => (
             <div key={c.id} style={{ viewTransitionName: `conn-${c.id}` }}>
               <Card className="flex items-center justify-between">
                 <div>
@@ -123,7 +126,8 @@ export function ConnectionsClient({
                 </div>
               </Card>
             </div>
-          ))
+          ))}
+          </div>
         )}
       </section>
 

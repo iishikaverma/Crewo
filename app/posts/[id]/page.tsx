@@ -8,11 +8,7 @@ import { Card, Button, Badge, Textarea } from "@/components/ui";
 import { TeamComposition } from "@/components/TeamComposition";
 import { Confetti } from "@/components/Confetti";
 import { ToastButton } from "@/components/ToastButton";
-
-const TYPE_LABEL: Record<string, string> = {
-  hackathon: "🏆 Hackathon",
-  project: "🛠️ Project",
-};
+import { PostType } from "@/components/PostType";
 
 type Contactable = { name: string | null; githubUrl: string | null; linkedinUrl: string | null };
 
@@ -61,7 +57,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
 
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-          <span>{TYPE_LABEL[post.type] ?? post.type}</span>
+          <PostType type={post.type} />
           {post.hackathonName && <Badge tone="accent">{post.hackathonName}</Badge>}
           {post.status === "closed" && <Badge>closed</Badge>}
         </div>
@@ -83,13 +79,8 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
         </div>
       </header>
 
-      <TeamComposition
-        neededSkills={post.neededSkills}
-        memberSkills={memberSkills}
-        filled={filledSpots}
-        teamSize={post.teamSize}
-      />
-
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_320px]">
+        <div className="order-2 flex min-w-0 flex-col gap-6 lg:order-1">
       {isAuthor ? (
         <section className="flex flex-col gap-5">
           <form action={setPostStatus.bind(null, post.id, post.status === "open" ? "closed" : "open")}>
@@ -158,7 +149,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
 
           {myReq?.status === "pending" && (
             <p className="text-sm text-muted">
-              ✅ Request sent — waiting for {post.author.name ?? "the author"} to respond.
+              Request sent — waiting for {post.author.name ?? "the author"} to respond.
             </p>
           )}
 
@@ -166,7 +157,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
             <div className="flex flex-col gap-2">
               <Confetti fireKey={`join-${myReq.id}`} />
               <p className="text-sm font-semibold text-[var(--success)]">
-                🎉 You&apos;re in! Here&apos;s how to reach {post.author.name ?? "the author"}:
+                You&apos;re in! Here&apos;s how to reach {post.author.name ?? "the author"}:
               </p>
               <Contact u={post.author} />
             </div>
@@ -187,6 +178,17 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
           )}
         </Card>
       )}
+        </div>
+
+        <div className="order-1 lg:order-2 lg:sticky lg:top-6 lg:self-start">
+          <TeamComposition
+            neededSkills={post.neededSkills}
+            memberSkills={memberSkills}
+            filled={filledSpots}
+            teamSize={post.teamSize}
+          />
+        </div>
+      </div>
     </main>
   );
 }

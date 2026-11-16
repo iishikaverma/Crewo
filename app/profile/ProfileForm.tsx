@@ -36,34 +36,39 @@ export function ProfileForm({ user }: { user: U }) {
 
   return (
     <form action={action} className="flex flex-col gap-5">
-      <Field label="Full name">
-        <Input name="name" defaultValue={user.name ?? ""} required placeholder="e.g. Ishika Verma" />
-      </Field>
+      <Card className="flex flex-col gap-5">
+        <h2 className="text-sm font-semibold tracking-tight">Basics</h2>
+        <Field label="Full name">
+          <Input name="name" defaultValue={user.name ?? ""} required placeholder="e.g. Ishika Verma" />
+        </Field>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Role">
-          <Select name="role" defaultValue={user.role ?? ""}>
-            <option value="">—</option>
-            {ROLES.map((r) => (<option key={r} value={r}>{r}</option>))}
-          </Select>
-        </Field>
-        <Field label="Years of experience">
-          <Input name="yearsExperience" type="number" min={0} max={50} defaultValue={user.yearsExperience ?? ""} />
-        </Field>
-      </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Role">
+            <Select name="role" defaultValue={user.role ?? ""}>
+              <option value="">—</option>
+              {ROLES.map((r) => (<option key={r} value={r}>{r}</option>))}
+            </Select>
+          </Field>
+          <Field label="Years of experience">
+            <Input name="yearsExperience" type="number" min={0} max={50} defaultValue={user.yearsExperience ?? ""} />
+          </Field>
+        </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field label="Location">
-          <Input name="location" defaultValue={user.location ?? ""} placeholder="Delhi" />
-        </Field>
-        <Field label="Year / branch">
-          <div className="flex gap-2">
-            <Input name="year" defaultValue={user.year ?? ""} placeholder="3" />
-            <Input name="branch" defaultValue={user.branch ?? ""} placeholder="CSE" />
-          </div>
-        </Field>
-      </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field label="Location">
+            <Input name="location" defaultValue={user.location ?? ""} placeholder="Delhi" />
+          </Field>
+          <Field label="Year / branch">
+            <div className="flex gap-2">
+              <Input name="year" defaultValue={user.year ?? ""} placeholder="3" />
+              <Input name="branch" defaultValue={user.branch ?? ""} placeholder="CSE" />
+            </div>
+          </Field>
+        </div>
+      </Card>
 
+      <Card className="flex flex-col gap-5">
+        <h2 className="text-sm font-semibold tracking-tight">Skills &amp; interests</h2>
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium text-muted">Stack / skills</span>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:grid-cols-4">
@@ -92,7 +97,10 @@ export function ProfileForm({ user }: { user: U }) {
       <Field label="Looking for">
         <Input name="lookingFor" defaultValue={user.lookingFor ?? ""} placeholder="backend + designer for a weekend hack" />
       </Field>
+      </Card>
 
+      <Card className="flex flex-col gap-5">
+        <h2 className="text-sm font-semibold tracking-tight">About</h2>
       {user.githubBio && (
         <div className="flex flex-col gap-1">
           <span className="text-xs font-medium text-muted">Bio · from GitHub</span>
@@ -105,10 +113,12 @@ export function ProfileForm({ user }: { user: U }) {
       <Field label="Description">
         <Textarea name="bio" defaultValue={user.bio ?? ""} rows={3} placeholder="Write your own — what you're building, what you're into, what you want from a team." />
       </Field>
+      </Card>
 
       <Card className="flex flex-col gap-4">
+        <h2 className="text-sm font-semibold tracking-tight">Links</h2>
         <p className="text-xs text-muted">
-          Links — GitHub is auto-fetched (avatar, bio, top repos). LinkedIn revealed on connect.
+          GitHub is auto-fetched (avatar, bio, top repos). LinkedIn revealed on connect.
         </p>
         <Field label="GitHub URL">
           <Input name="githubUrl" defaultValue={user.githubUrl ?? ""} placeholder="https://github.com/you" />

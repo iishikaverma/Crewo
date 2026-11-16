@@ -68,6 +68,8 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
         </div>
       </header>
 
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_340px]">
+        <div className="flex flex-col gap-6">
       {user.githubBio && (
         <div>
           <p className="mb-1 text-xs font-medium text-muted">Bio · from GitHub</p>
@@ -96,14 +98,12 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
         </div>
       )}
 
-      <GithubHighlights githubUrl={user.githubUrl} repos={repos} stats={githubStats} />
-
       {!isMe && me && (
         <Card>
           {connected ? (
             <div className="flex flex-col gap-2">
               <Confetti fireKey={`conn-${outgoing?.id ?? incoming?.id ?? user.id}`} />
-              <p className="text-sm font-semibold text-[var(--success)]">✅ Connected — reach out:</p>
+              <p className="text-sm font-semibold text-[var(--success)]">Connected — reach out:</p>
               <ContactLinks githubUrl={user.githubUrl} linkedinUrl={user.linkedinUrl} />
             </div>
           ) : incoming?.status === "pending" ? (
@@ -114,7 +114,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
               </p>
               <div className="flex gap-2">
                 <form action={respondConnect.bind(null, incoming.id, "accepted")}>
-                  <ToastButton confetti message={`Connected with ${user.name ?? "them"} 🎉`}>Accept</ToastButton>
+                  <ToastButton confetti message={`Connected with ${user.name ?? "them"}`}>Accept</ToastButton>
                 </form>
                 <form action={respondConnect.bind(null, incoming.id, "declined")}>
                   <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
@@ -123,7 +123,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
             </div>
           ) : outgoing?.status === "pending" ? (
             <p className="text-sm text-muted">
-              ✅ Connect request sent — waiting for {user.name ?? "them"} to accept.
+              Connect request sent — waiting for {user.name ?? "them"} to accept.
             </p>
           ) : (
             <form action={sendConnect.bind(null, user.id)} className="flex flex-col gap-3">
@@ -142,6 +142,12 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
           )}
         </Card>
       )}
+        </div>
+
+        <div className="lg:sticky lg:top-6 lg:self-start">
+          <GithubHighlights githubUrl={user.githubUrl} repos={repos} stats={githubStats} />
+        </div>
+      </div>
     </main>
   );
 }

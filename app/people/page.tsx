@@ -70,7 +70,7 @@ export default async function PeoplePage({ searchParams }: PageProps<"/people">)
         {active ? " — ranked by fit" : ""}
       </p>
 
-      <div className="flex flex-col gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {ranked.map(({ u, fit }) => (
           <ProfileCard
             key={u.id}

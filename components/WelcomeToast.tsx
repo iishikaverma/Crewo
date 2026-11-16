@@ -10,7 +10,7 @@ export function WelcomeToast({ name }: { name: string }) {
       if (sessionStorage.getItem("welcomed")) return;
       sessionStorage.setItem("welcomed", "1");
     } catch {}
-    toast(`Welcome, ${name} 👋`, { description: "Find your crew — post a need or browse people." });
+    toast(`Welcome, ${name}`, { description: "Find your crew — post a need or browse people." });
   }, [name]);
   return null;
 }
