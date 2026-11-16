@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireOnboarded } from "@/lib/user";
+import { requireOnboarded, isOwner } from "@/lib/user";
 import { PageHeader, Card } from "@/components/ui";
 import { CountUp } from "@/components/CountUp";
 
@@ -17,7 +18,7 @@ function StatTile({ value, label, hint }: { value: number; label: string; hint?:
 
 export default async function StatsPage() {
   const me = await requireOnboarded();
-  void me;
+  if (!isOwner(me)) redirect("/");
 
   const [profiles, posts, teams, connections] = await Promise.all([
     prisma.user.count(),

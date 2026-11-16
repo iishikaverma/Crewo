@@ -12,7 +12,7 @@ const ICONS: Record<string, React.ReactNode> = {
   "/stats": <path d="M4 16V9m4 7V5m4 11v-4m4 4V8" />,
 };
 
-export function SidebarNav({ pending }: { pending: number }) {
+export function SidebarNav({ pending, showStats }: { pending: number; showStats?: boolean }) {
   const pathname = usePathname();
   const links = [
     { href: "/", label: "Browse" },
@@ -20,7 +20,7 @@ export function SidebarNav({ pending }: { pending: number }) {
     { href: "/connections", label: "Connections", badge: pending },
     { href: "/posts/new", label: "New post" },
     { href: "/profile", label: "Profile" },
-    { href: "/stats", label: "Stats" },
+    ...(showStats ? [{ href: "/stats", label: "Stats" }] : []),
   ];
 
   return (

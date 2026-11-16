@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { currentUser } from "@/lib/user";
+import { currentUser, isOwner } from "@/lib/user";
 import { prisma } from "@/lib/prisma";
 import { signOut } from "@/auth";
 import { Avatar, Button } from "@/components/ui";
@@ -26,7 +26,7 @@ export async function Sidebar() {
         Crewo
       </Link>
 
-      <SidebarNav pending={pending} />
+      <SidebarNav pending={pending} showStats={isOwner(user)} />
 
       <div className="mt-auto flex flex-col gap-3 pt-4">
         <CmdKButton />

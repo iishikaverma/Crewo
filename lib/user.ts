@@ -31,6 +31,20 @@ export async function requireUserId() {
   return id;
 }
 
+/** Owner-only gate (e.g. the Stats page). Matches the signed-in user against the
+ *  OWNER_EMAILS / OWNER_GITHUB env allowlists — by email OR GitHub login, so it works
+ *  for both dev email login and prod GitHub login (whose email may be a private noreply). */
+export function isOwner(
+  user: { email: string | null; githubUrl: string | null } | null
+): boolean {
+  if (!user) return false;
+  const list = (v?: string) => (v ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const email = user.email?.toLowerCase();
+  if (email && list(process.env.OWNER_EMAILS).includes(email)) return true;
+  const login = user.githubUrl?.toLowerCase().match(/github\.com\/([^/?#]+)/)?.[1];
+  return !!login && list(process.env.OWNER_GITHUB).includes(login);
+}
+
 /** "react, figma , node" -> ["react","figma","node"] (trimmed, deduped, non-empty) */
 export function parseSkills(input: FormDataEntryValue | null): string[] {
   return [
