@@ -4,6 +4,7 @@ import { signIn } from "@/auth";
 import { currentUser } from "@/lib/user";
 import { TileGrid } from "@/components/TileGrid";
 import { Button, Select } from "@/components/ui";
+import { Logo } from "@/components/Logo";
 
 export default async function SignInPage() {
   const me = await currentUser();
@@ -35,7 +36,7 @@ export default async function SignInPage() {
 
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-8">
         <div className="flex flex-col items-center gap-3 text-center">
-          <span className="h-11 w-11 rounded-[12px] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] shadow-[0_0_30px_-4px_var(--accent-glow)]" />
+          <Logo size={44} />
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Crewo</h1>
             <p className="mt-1 text-sm text-muted">

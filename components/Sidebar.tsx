@@ -5,6 +5,7 @@ import { signOut } from "@/auth";
 import { Avatar, Button } from "@/components/ui";
 import { CmdKButton } from "@/components/CmdKButton";
 import { SidebarNav } from "@/components/SidebarNav";
+import { Logo } from "@/components/Logo";
 
 export async function Sidebar() {
   const user = await currentUser();
@@ -22,7 +23,7 @@ export async function Sidebar() {
   return (
     <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-bg/60 px-3 py-4 lg:flex">
       <Link href="/" className="mb-5 flex items-center gap-2 px-2 font-bold tracking-tight">
-        <span className="h-6 w-6 rounded-[6px] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] shadow-[0_0_14px_-2px_var(--accent-glow)]" />
+        <Logo size={26} />
         Crewo
       </Link>
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TileGrid } from "@/components/TileGrid";
 import { FitRing } from "@/components/FitRing";
 import { Button, Card, SkillChip } from "@/components/ui";
+import { Logo } from "@/components/Logo";
 
 const STACK = [
   "typescript", "react", "next.js", "node", "python", "pytorch", "figma",
@@ -86,7 +87,7 @@ export function Landing() {
       {/* Top bar */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <span className="flex items-center gap-2 font-bold tracking-tight">
-          <span className="h-5 w-5 rounded-[5px] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] shadow-[0_0_14px_-2px_var(--accent-glow)]" />
+          <Logo size={22} />
           Crewo
         </span>
         <Link href="/signin">
@@ -230,7 +231,7 @@ export function Landing() {
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6 text-xs text-faint">
           <span className="flex items-center gap-2">
-            <span className="h-3.5 w-3.5 rounded-[4px] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)]" />
+            <Logo size={16} />
             Crewo · hackathons &amp; projects
           </span>
           <Link href="/signin" className="hover:text-fg">Sign in</Link>

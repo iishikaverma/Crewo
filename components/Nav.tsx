@@ -5,6 +5,7 @@ import { signOut } from "@/auth";
 import { Avatar, Button } from "@/components/ui";
 import { CmdKButton } from "@/components/CmdKButton";
 import { MobileNav } from "@/components/MobileNav";
+import { Logo } from "@/components/Logo";
 
 export async function Nav() {
   const user = await currentUser();
@@ -26,7 +27,7 @@ export async function Nav() {
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <nav className="flex items-center gap-5">
           <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
-            <span className="h-5 w-5 rounded-[5px] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] shadow-[0_0_14px_-2px_var(--accent-glow)]" />
+            <Logo size={22} />
             Crewo
           </Link>
           <span className="hidden items-center gap-5 sm:flex">
