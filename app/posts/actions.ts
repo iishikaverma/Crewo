@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireUserId, parseSkills } from "@/lib/user";
+import { requireUserId, parseSkills, capStr } from "@/lib/user";
 import { sendEmail, emailLayout, appUrl } from "@/lib/email";
 
 const TYPES = ["hackathon", "project"] as const;
@@ -11,8 +11,8 @@ type PostType = (typeof TYPES)[number];
 
 export async function createPost(formData: FormData) {
   const authorId = await requireUserId();
-  const title = String(formData.get("title") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
+  const title = capStr(formData.get("title"), 120);
+  const description = capStr(formData.get("description"), 4000);
   if (!title || !description) throw new Error("Title and description are required");
 
   const type = String(formData.get("type") ?? "");
@@ -22,8 +22,8 @@ export async function createPost(formData: FormData) {
 
   const teamSize = Math.max(2, Math.min(20, Math.round(Number(formData.get("teamSize")) || 2)));
   const when = String(formData.get("happeningAt") ?? "");
-  const trimOrNull = (v: FormDataEntryValue | null) => {
-    const s = String(v ?? "").trim();
+  const trimOrNull = (v: FormDataEntryValue | null, max = 300) => {
+    const s = capStr(v, max);
     return s.length ? s : null;
   };
 
@@ -46,7 +46,7 @@ export async function createPost(formData: FormData) {
 
 export async function requestToJoin(postId: string, formData: FormData) {
   const requesterId = await requireUserId();
-  const message = String(formData.get("message") ?? "").trim();
+  const message = capStr(formData.get("message"), 1000);
 
   const post = await prisma.post.findUnique({
     where: { id: postId },
@@ -87,13 +87,26 @@ export async function respondToRequest(
   const req = await prisma.joinRequest.findUnique({
     where: { id: requestId },
     include: {
-      post: { select: { authorId: true, title: true } },
+      post: { select: { id: true, authorId: true, title: true, teamSize: true } },
       requester: { select: { email: true } },
     },
   });
   if (!req || req.post.authorId !== userId) throw new Error("Not allowed");
 
+  // Capacity: author counts as 1 seat. Block accepting past teamSize.
+  const acceptedCount = await prisma.joinRequest.count({
+    where: { postId: req.postId, status: "accepted" },
+  });
+  if (status === "accepted" && 1 + acceptedCount >= req.post.teamSize) {
+    throw new Error("This team is already full");
+  }
+
   await prisma.joinRequest.update({ where: { id: requestId }, data: { status } });
+
+  // Auto-close the post once this accept fills the last seat.
+  if (status === "accepted" && acceptedCount + 2 >= req.post.teamSize) {
+    await prisma.post.update({ where: { id: req.postId }, data: { status: "closed" } });
+  }
 
   if (status === "accepted") {
     await sendEmail({
@@ -118,6 +131,25 @@ export async function setPostStatus(postId: string, status: "open" | "closed") {
   if (!post || post.authorId !== userId) throw new Error("Not allowed");
 
   await prisma.post.update({ where: { id: postId }, data: { status } });
+  revalidatePath(`/posts/${postId}`);
+  revalidatePath("/");
+}
+
+export async function deletePost(postId: string) {
+  const userId = await requireUserId();
+  const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true } });
+  if (!post || post.authorId !== userId) throw new Error("Not allowed");
+
+  // Join requests cascade-delete with the post (schema onDelete: Cascade).
+  await prisma.post.delete({ where: { id: postId } });
+  revalidatePath("/");
+  redirect("/");
+}
+
+export async function withdrawJoinRequest(postId: string) {
+  const requesterId = await requireUserId();
+  // deleteMany so withdrawing a non-existent request is a no-op, not a throw.
+  await prisma.joinRequest.deleteMany({ where: { postId, requesterId } });
   revalidatePath(`/posts/${postId}`);
   revalidatePath("/");
 }

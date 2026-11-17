@@ -5,10 +5,11 @@ import { requireOnboarded } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
 import { GithubHighlights } from "@/components/GithubHighlights";
 import type { GithubRepo, GithubStats } from "@/lib/github";
-import { sendConnect, respondConnect } from "@/app/connections/actions";
+import { sendConnect, respondConnect, withdrawConnect } from "@/app/connections/actions";
 import { Avatar, Button, Card } from "@/components/ui";
 import { Confetti } from "@/components/Confetti";
-import { ToastButton } from "@/components/ToastButton";
+import { ToastForm } from "@/components/ToastForm";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 function ContactLinks({ githubUrl, linkedinUrl }: { githubUrl: string | null; linkedinUrl: string | null }) {
   const links = [
@@ -113,20 +114,36 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
                 {incoming.message ? `: "${incoming.message}"` : "."}
               </p>
               <div className="flex gap-2">
-                <form action={respondConnect.bind(null, incoming.id, "accepted")}>
-                  <ToastButton confetti message={`Connected with ${user.name ?? "them"}`}>Accept</ToastButton>
-                </form>
+                <ToastForm
+                  action={respondConnect.bind(null, incoming.id, "accepted")}
+                  confetti
+                  success={`Connected with ${user.name ?? "them"}`}
+                  submitLabel="Accept"
+                />
                 <form action={respondConnect.bind(null, incoming.id, "declined")}>
                   <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
                 </form>
               </div>
             </div>
           ) : outgoing?.status === "pending" ? (
-            <p className="text-sm text-muted">
-              Connect request sent — waiting for {user.name ?? "them"} to accept.
-            </p>
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-muted">
+                Connect request sent — waiting for {user.name ?? "them"} to accept.
+              </p>
+              <form action={withdrawConnect.bind(null, user.id)}>
+                <ConfirmButton variant="secondary" confirm="Withdraw your connect request?">
+                  Withdraw
+                </ConfirmButton>
+              </form>
+            </div>
           ) : (
-            <form action={sendConnect.bind(null, user.id)} className="flex flex-col gap-3">
+            <ToastForm
+              action={sendConnect.bind(null, user.id)}
+              success="Connect request sent ✓"
+              submitLabel="Request to connect"
+              submitClassName="self-start"
+              className="flex flex-col gap-3"
+            >
               <span className="text-sm font-medium">Connect with {user.name ?? "this person"}</span>
               {outgoing?.status === "declined" && (
                 <p className="text-xs text-muted">Your earlier request was declined — you can try again.</p>
@@ -137,8 +154,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
                 placeholder="Say why you'd like to connect (1–2 lines)."
                 className="w-full rounded-[10px] border border-border bg-surface px-3 py-2 text-sm text-fg placeholder:text-faint focus:border-accent"
               />
-              <ToastButton message="Connect request sent ✓" className="self-start">Request to connect</ToastButton>
-            </form>
+            </ToastForm>
           )}
         </Card>
       )}

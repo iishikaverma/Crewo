@@ -55,7 +55,10 @@ export function peopleFit(c: Candidate, f: PeopleFilter): number {
     total += WEIGHTS.experience;
   }
   if (f.location) {
-    const m = (c.location ?? "").toLowerCase().includes(f.location.toLowerCase()) ? 1 : 0;
+    // Word-boundary match so "india" doesn't match "indiana", while "delhi"
+    // still matches "New Delhi, India". Escape regex-special chars in the query.
+    const esc = f.location.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const m = new RegExp(`\\b${esc}\\b`).test((c.location ?? "").toLowerCase()) ? 1 : 0;
     weighted += WEIGHTS.location * m;
     total += WEIGHTS.location;
   }
@@ -98,7 +101,14 @@ export function postMatch(opts: {
   const vs = new Set(opts.viewerSkills.map(lc));
   const brings = open.filter((s) => vs.has(lc(s)));
 
-  const gapBase = open.length ? brings.length / open.length : 0;
+  // When the team already covers every needed skill (no open gap) but seats
+  // remain, don't collapse to 0 — fall back to the viewer's coverage of the
+  // needed skills so a well-matched person still surfaces. No needs at all → 1.
+  const gapBase = open.length
+    ? brings.length / open.length
+    : opts.neededSkills.length
+      ? opts.neededSkills.filter((s) => vs.has(lc(s))).length / opts.neededSkills.length
+      : 1;
   const avail = opts.viewerOpenTo.map(lc).includes(lc(opts.postType));
   const sameCampus =
     !!opts.authorBranch && !!opts.viewerBranch && lc(opts.authorBranch) === lc(opts.viewerBranch);

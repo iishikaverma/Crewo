@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireOnboarded, parseSkills } from "@/lib/user";
 import { FilterBar } from "@/components/FilterBar";
 import { ProfileCard } from "@/components/ProfileCard";
-import { PageHeader } from "@/components/ui";
+import { PageHeader, EmptyState } from "@/components/ui";
 import {
   peopleFit,
   completeness,
@@ -70,16 +71,31 @@ export default async function PeoplePage({ searchParams }: PageProps<"/people">)
         {active ? " — ranked by fit" : ""}
       </p>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        {ranked.map(({ u, fit }) => (
-          <ProfileCard
-            key={u.id}
-            user={u}
-            highlightSkills={filter.skills}
-            fit={active ? fit : undefined}
-          />
-        ))}
-      </div>
+      {ranked.length === 0 ? (
+        <EmptyState>
+          {active ? (
+            <>
+              No one matches these filters.{" "}
+              <Link href="/people" className="text-accent-2 hover:underline">
+                Clear filters
+              </Link>
+            </>
+          ) : (
+            "No other people here yet — check back soon."
+          )}
+        </EmptyState>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {ranked.map(({ u, fit }) => (
+            <ProfileCard
+              key={u.id}
+              user={u}
+              highlightSkills={filter.skills}
+              fit={active ? fit : undefined}
+            />
+          ))}
+        </div>
+      )}
     </main>
   );
 }

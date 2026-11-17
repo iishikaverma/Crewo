@@ -8,7 +8,8 @@ import { fetchGithubProfile } from "@/lib/github";
 import { ROLES, OPEN_TO } from "@/lib/skills";
 
 const str = (v: FormDataEntryValue | null) => {
-  const s = String(v ?? "").trim();
+  // cap free-text at the trust boundary (covers name/bio/location/urls/lookingFor)
+  const s = String(v ?? "").trim().slice(0, 1000);
   return s.length ? s : null;
 };
 

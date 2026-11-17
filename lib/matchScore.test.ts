@@ -36,6 +36,9 @@ assert.equal(peopleFit(base({ yearsExperience: 5 }), fe), 100);
 // role + location exact
 assert.equal(peopleFit(base({ role: "backend" }), filt({ role: "backend" })), 100);
 assert.equal(peopleFit(base({ location: "Delhi" }), filt({ location: "delhi" })), 100);
+// location is word-boundary, not naive substring
+assert.equal(peopleFit(base({ location: "Indiana" }), filt({ location: "india" })), 0, "india !~ indiana");
+assert.equal(peopleFit(base({ location: "New Delhi, India" }), filt({ location: "delhi" })), 100);
 
 // openTo intersection
 assert.equal(peopleFit(base({ openTo: ["hackathon"] }), filt({ openTo: ["hackathon", "project"] })), 100);
@@ -66,5 +69,8 @@ assert.ok(pm({ viewerSkills: ["react"], viewerOpenTo: ["hackathon"] }).fit > fil
 assert.ok(pm({ viewerSkills: ["react"], viewerBranch: "CSE" }).fit > fillsGap);
 // reasons mention what you bring
 assert.ok(pm({ viewerSkills: ["react"] }).reasons.some((r) => r.includes("react")));
+// team already covers all needed skills (open seat): a matching viewer still scores > 0
+const allCovered = pm({ viewerSkills: ["react", "node"], memberSkills: ["react", "node"] }).fit;
+assert.ok(allCovered > 0, "fully-covered post still ranks a skilled viewer above zero");
 
 console.log("matchScore.test.ts ✓");

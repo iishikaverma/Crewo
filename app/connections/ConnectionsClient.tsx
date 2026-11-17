@@ -4,7 +4,7 @@ import { useState } from "react";
 import { flushSync } from "react-dom";
 import Link from "next/link";
 import { toast } from "sonner";
-import { respondConnect } from "./actions";
+import { respondConnect, withdrawConnect } from "./actions";
 import { Card, Button, EmptyState, Avatar } from "@/components/ui";
 import { burstConfetti } from "@/components/confettiBurst";
 
@@ -49,21 +49,52 @@ export function ConnectionsClient({
 }) {
   const [requests, setRequests] = useState(initialRequests);
   const [connections, setConnections] = useState(initialConnections);
+  const [sentList, setSentList] = useState(sent);
 
-  function accept(r: Req, x: number, y: number) {
-    burstConfetti(x, y);
+  // Optimistic, but roll back + toast if the server action actually fails, so the
+  // UI never silently diverges from the DB.
+  async function accept(r: Req, x: number, y: number) {
+    const prevReq = requests;
+    const prevConn = connections;
     withTransition(() => {
-      setRequests((rs) => rs.filter((x) => x.id !== r.id));
+      setRequests((rs) => rs.filter((v) => v.id !== r.id));
       setConnections((cs) => [{ id: r.id, other: r.from }, ...cs]);
     });
-    respondConnect(r.id, "accepted");
-    toast.success(`Connected with ${r.from.name ?? "them"}`);
+    try {
+      await respondConnect(r.id, "accepted");
+      burstConfetti(x, y);
+      toast.success(`Connected with ${r.from.name ?? "them"}`);
+    } catch {
+      withTransition(() => {
+        setRequests(prevReq);
+        setConnections(prevConn);
+      });
+      toast.error("Couldn't accept — please try again.");
+    }
   }
 
-  function decline(id: string) {
-    withTransition(() => setRequests((rs) => rs.filter((x) => x.id !== id)));
-    respondConnect(id, "declined");
-    toast("Request declined");
+  async function decline(id: string) {
+    const prevReq = requests;
+    withTransition(() => setRequests((rs) => rs.filter((v) => v.id !== id)));
+    try {
+      await respondConnect(id, "declined");
+      toast("Request declined");
+    } catch {
+      withTransition(() => setRequests(prevReq));
+      toast.error("Couldn't decline — please try again.");
+    }
+  }
+
+  async function withdraw(s: Sent) {
+    const prev = sentList;
+    withTransition(() => setSentList((xs) => xs.filter((v) => v.id !== s.id)));
+    try {
+      await withdrawConnect(s.to.id);
+      toast("Request withdrawn");
+    } catch {
+      withTransition(() => setSentList(prev));
+      toast.error("Couldn't withdraw — please try again.");
+    }
   }
 
   return (
@@ -147,13 +178,18 @@ export function ConnectionsClient({
         )}
       </section>
 
-      {sent.length > 0 && (
+      {sentList.length > 0 && (
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold tracking-tight">Sent — pending</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-          {sent.map((r) => (
-            <Card key={r.id} className="py-3 text-sm">
-              <PersonLink user={r.to} /> <span className="text-muted">· waiting</span>
+          {sentList.map((r) => (
+            <Card key={r.id} className="flex items-center justify-between gap-2 py-3 text-sm">
+              <span className="min-w-0 truncate">
+                <PersonLink user={r.to} /> <span className="text-muted">· waiting</span>
+              </span>
+              <Button variant="ghost" className="shrink-0 px-2 py-1 text-xs" onClick={() => withdraw(r)}>
+                Withdraw
+              </Button>
             </Card>
           ))}
           </div>

@@ -45,6 +45,11 @@ export function isOwner(
   return !!login && list(process.env.OWNER_GITHUB).includes(login);
 }
 
+/** Trim + hard length cap on free-text form input, at the server-action trust boundary. */
+export function capStr(input: FormDataEntryValue | null, max: number): string {
+  return String(input ?? "").trim().slice(0, max);
+}
+
 /** "react, figma , node" -> ["react","figma","node"] (trimmed, deduped, non-empty) */
 export function parseSkills(input: FormDataEntryValue | null): string[] {
   return [

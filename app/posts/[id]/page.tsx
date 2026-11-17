@@ -3,11 +3,18 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireOnboarded } from "@/lib/user";
 import { SkillTags } from "@/components/SkillTags";
-import { requestToJoin, respondToRequest, setPostStatus } from "../actions";
+import {
+  requestToJoin,
+  respondToRequest,
+  setPostStatus,
+  deletePost,
+  withdrawJoinRequest,
+} from "../actions";
 import { Card, Button, Badge, Textarea } from "@/components/ui";
 import { TeamComposition } from "@/components/TeamComposition";
 import { Confetti } from "@/components/Confetti";
-import { ToastButton } from "@/components/ToastButton";
+import { ToastForm } from "@/components/ToastForm";
+import { ConfirmButton } from "@/components/ConfirmButton";
 import { PostType } from "@/components/PostType";
 
 type Contactable = { name: string | null; githubUrl: string | null; linkedinUrl: string | null };
@@ -83,11 +90,16 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
         <div className="order-2 flex min-w-0 flex-col gap-6 lg:order-1">
       {isAuthor ? (
         <section className="flex flex-col gap-5">
-          <form action={setPostStatus.bind(null, post.id, post.status === "open" ? "closed" : "open")}>
-            <Button variant="secondary" className="px-3 py-1.5 text-xs">
-              {post.status === "open" ? "Close post (team formed)" : "Reopen post"}
-            </Button>
-          </form>
+          <div className="flex flex-wrap gap-2">
+            <form action={setPostStatus.bind(null, post.id, post.status === "open" ? "closed" : "open")}>
+              <Button variant="secondary" className="px-3 py-1.5 text-xs">
+                {post.status === "open" ? "Close post (team formed)" : "Reopen post"}
+              </Button>
+            </form>
+            <form action={deletePost.bind(null, post.id)}>
+              <ConfirmButton confirm="Delete this post? This can't be undone.">Delete post</ConfirmButton>
+            </form>
+          </div>
 
           <div>
             <h2 className="mb-3 font-semibold tracking-tight">Requests to join</h2>
@@ -106,9 +118,12 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                     </div>
                     {r.message && <p className="mt-2 text-sm text-muted">{r.message}</p>}
                     <div className="mt-3 flex gap-2">
-                      <form action={respondToRequest.bind(null, r.id, "accepted")}>
-                        <ToastButton confetti message={`Accepted ${r.requester.name ?? "them"} ✓`}>Accept</ToastButton>
-                      </form>
+                      <ToastForm
+                        action={respondToRequest.bind(null, r.id, "accepted")}
+                        confetti
+                        success={`Accepted ${r.requester.name ?? "them"} ✓`}
+                        submitLabel="Accept"
+                      />
                       <form action={respondToRequest.bind(null, r.id, "declined")}>
                         <Button variant="secondary" className="px-3 py-1.5 text-xs">Decline</Button>
                       </form>
@@ -138,19 +153,31 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
       ) : (
         <Card>
           {!myReq && post.status === "open" && (
-            <form action={requestToJoin.bind(null, post.id)} className="flex flex-col gap-3">
+            <ToastForm
+              action={requestToJoin.bind(null, post.id)}
+              success="Request sent ✓"
+              submitLabel="Send request"
+              submitClassName="self-start"
+              className="flex flex-col gap-3"
+            >
               <span className="text-sm font-medium">Request to join</span>
               <Textarea name="message" rows={3} placeholder="Say what you bring (1–2 lines)." />
-              <ToastButton message="Request sent ✓" className="self-start">Send request</ToastButton>
-            </form>
+            </ToastForm>
           )}
 
           {!myReq && post.status === "closed" && <p className="text-sm text-muted">This post is closed.</p>}
 
           {myReq?.status === "pending" && (
-            <p className="text-sm text-muted">
-              Request sent — waiting for {post.author.name ?? "the author"} to respond.
-            </p>
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-muted">
+                Request sent — waiting for {post.author.name ?? "the author"} to respond.
+              </p>
+              <form action={withdrawJoinRequest.bind(null, post.id)}>
+                <ConfirmButton variant="secondary" confirm="Withdraw your request?">
+                  Withdraw request
+                </ConfirmButton>
+              </form>
+            </div>
           )}
 
           {myReq?.status === "accepted" && (
@@ -167,12 +194,16 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
             <div className="flex flex-col gap-3">
               <p className="text-sm text-muted">This request was declined.</p>
               {post.status === "open" && (
-                <form action={requestToJoin.bind(null, post.id)} className="flex flex-col gap-2">
+                <ToastForm
+                  action={requestToJoin.bind(null, post.id)}
+                  variant="secondary"
+                  success="Request sent ✓"
+                  submitLabel="Request again"
+                  submitClassName="self-start"
+                  className="flex flex-col gap-2"
+                >
                   <Textarea name="message" rows={2} placeholder="Try again with a note." />
-                  <ToastButton variant="secondary" message="Request sent ✓" className="self-start">
-                    Request again
-                  </ToastButton>
-                </form>
+                </ToastForm>
               )}
             </div>
           )}

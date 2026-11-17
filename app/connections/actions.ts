@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireUserId } from "@/lib/user";
+import { requireUserId, capStr } from "@/lib/user";
 import { sendEmail, emailLayout, appUrl } from "@/lib/email";
 
 export async function sendConnect(toId: string, formData: FormData) {
@@ -12,7 +12,7 @@ export async function sendConnect(toId: string, formData: FormData) {
   const target = await prisma.user.findUnique({ where: { id: toId }, select: { email: true } });
   if (!target) throw new Error("User not found");
 
-  const message = String(formData.get("message") ?? "").trim();
+  const message = capStr(formData.get("message"), 1000);
 
   // ponytail: upsert so a declined request can be re-sent without a duplicate row
   await prisma.connectRequest.upsert({
@@ -64,5 +64,13 @@ export async function respondConnect(
   }
 
   revalidatePath(`/u/${req.fromId}`);
+  revalidatePath("/connections");
+}
+
+export async function withdrawConnect(toId: string) {
+  const fromId = await requireUserId();
+  // deleteMany so withdrawing a non-existent/already-handled request is a no-op.
+  await prisma.connectRequest.deleteMany({ where: { fromId, toId, status: "pending" } });
+  revalidatePath(`/u/${toId}`);
   revalidatePath("/connections");
 }
