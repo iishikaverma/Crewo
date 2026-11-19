@@ -36,7 +36,26 @@ export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<H
   return <textarea className={cn(fieldBase, "resize-y", className)} {...props} />;
 }
 export function Select({ className, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(fieldBase, "appearance-none", className)} {...props} />;
+  // appearance-none drops the native chevron, so add a themed one back.
+  return (
+    <div className="relative">
+      <select className={cn(fieldBase, "w-full appearance-none pr-9", className)} {...props} />
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint"
+        aria-hidden
+      >
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </div>
+  );
 }
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
