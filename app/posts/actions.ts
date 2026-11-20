@@ -35,6 +35,7 @@ export async function createPost(formData: FormData) {
       hackathonName: trimOrNull(formData.get("hackathonName")),
       description,
       expecting: trimOrNull(formData.get("expecting")),
+      details: trimOrNull(formData.get("details"), 4000),
       neededSkills: parseSkills(formData.get("neededSkills")),
       teamSize,
       happeningAt: when ? new Date(when) : null,

@@ -39,6 +39,10 @@ export default async function NewPostPage() {
           <Textarea name="expecting" rows={2} placeholder="Someone who can own the backend, commits for the full weekend, ships fast." />
         </Field>
 
+        <Field label="Additional details (optional)">
+          <Textarea name="details" rows={3} placeholder="Anything else — timings, links, prizes, prerequisites, how to reach you." />
+        </Field>
+
         <Field label="Skills needed">
           <TagInput name="neededSkills" placeholder="node, then press enter" />
         </Field>

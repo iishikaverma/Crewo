@@ -64,6 +64,7 @@ model Post {
   hackathonName String?
   description   String
   expecting     String?
+  details       String?
   neededSkills String[]
   teamSize     Int
   happeningAt  DateTime?

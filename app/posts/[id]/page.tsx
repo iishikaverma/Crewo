@@ -80,6 +80,12 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
             <span className="font-medium text-fg">Looking for:</span> {post.expecting}
           </p>
         )}
+        {post.details && (
+          <div className="mt-1">
+            <p className="mb-1 text-xs font-medium text-muted">Additional details</p>
+            <p className="whitespace-pre-wrap text-sm text-fg/90">{post.details}</p>
+          </div>
+        )}
         <div className="mt-1">
           <p className="mb-1.5 text-xs font-medium text-muted">Skills needed</p>
           <SkillTags skills={post.neededSkills} highlight={isAuthor ? [] : me.skills} />
