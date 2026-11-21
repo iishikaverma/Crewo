@@ -82,13 +82,14 @@ export function Badge({
   className,
   children,
 }: {
-  tone?: "muted" | "accent" | "success";
+  tone?: "muted" | "accent" | "warm" | "success";
   className?: string;
   children: React.ReactNode;
 }) {
   const tones = {
     muted: "bg-surface-2 text-muted",
     accent: "bg-[var(--accent-soft)] text-accent-2",
+    warm: "bg-[var(--accent-warm-soft)] text-accent-warm",
     success: "bg-[var(--success-soft)] text-[var(--success)]",
   };
   return (

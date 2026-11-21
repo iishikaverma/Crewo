@@ -65,7 +65,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
           <PostType type={post.type} />
-          {post.hackathonName && <Badge tone="accent">{post.hackathonName}</Badge>}
+          {post.hackathonName && <Badge tone="warm">{post.hackathonName}</Badge>}
           {post.status === "closed" && <Badge>closed</Badge>}
         </div>
         <h1 className="text-2xl font-bold tracking-tight">{post.title}</h1>

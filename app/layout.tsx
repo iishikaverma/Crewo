@@ -33,12 +33,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <defs>
             <linearGradient id="crewoGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0" stopColor="var(--accent)" />
-              <stop offset="1" stopColor="var(--accent-2)" />
+              <stop offset="1" stopColor="var(--accent-warm)" />
             </linearGradient>
           </defs>
         </svg>
         <Toaster theme="dark" position="top-center" richColors toastOptions={{ style: { background: "var(--surface)", border: "1px solid var(--border-strong)", color: "var(--fg)" } }} />
-        <div className="aurora" aria-hidden />
         <Spotlight />
         <CommandPalette />
         <div className="lg:flex">

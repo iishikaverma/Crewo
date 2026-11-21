@@ -85,7 +85,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             <div className="text-[11px] text-muted">connections</div>
           </Link>
           <Link href="/connections" className="rounded-[10px] border border-border bg-surface px-3 py-2 text-center transition-colors hover:border-border-strong">
-            <div className="text-lg font-bold leading-none text-accent-2">{pendingConnects}</div>
+            <div className="text-lg font-bold leading-none text-accent-warm">{pendingConnects}</div>
             <div className="text-[11px] text-muted">pending</div>
           </Link>
         </div>

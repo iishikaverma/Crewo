@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 // GitHub-Universe-style background: an invisible grid of cells that light up with
 // a colored tile as the cursor passes over them, then fade out. Fills its parent
 // (which must be position:relative); sits behind content (z-0).
-const COLORS = ["#7c6cff", "#a78bfa", "#f472b6", "#fbbf24", "#34d399", "#38bdf8"];
+const COLORS = ["#7c6cff", "#a78bfa", "#ff7a66", "#f472b6", "#fbbf24", "#34d399", "#38bdf8"];
 const CELL = 46; // px
 
 export function TileGrid() {

@@ -16,7 +16,12 @@
   --accent-2: #a78bfa;
   --accent-fg: #ffffff;
   --accent-soft: color-mix(in oklab, var(--accent) 16%, transparent);
-  --accent-glow: color-mix(in oklab, var(--accent) 38%, transparent);
+  --accent-glow: color-mix(in oklab, var(--accent) 18%, transparent);
+
+  /* Warm accent — complements the cool violet with coral warmth */
+  --accent-warm: #ff7a66;
+  --accent-warm-2: #ffa07a;
+  --accent-warm-soft: color-mix(in oklab, var(--accent-warm) 16%, transparent);
 
   --success: #34d399;
   --success-soft: color-mix(in oklab, var(--success) 16%, transparent);
@@ -52,6 +57,8 @@
   --color-faint: var(--faint);
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
+  --color-accent-warm: var(--accent-warm);
+  --color-accent-warm-2: var(--accent-warm-2);
   --color-accent-fg: var(--accent-fg);
   --color-success: var(--success);
   --color-danger: var(--danger);
@@ -71,10 +78,10 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden; /* the landing's full-bleed w-screen must not leak a sideways scroll */
-  /* subtle top glow for premium depth */
+  /* very faint top tint for depth */
   background-image: radial-gradient(
     60rem 32rem at 50% -12rem,
-    color-mix(in oklab, var(--accent) 10%, transparent),
+    color-mix(in oklab, var(--accent) 4%, transparent),
     transparent 70%
   );
   background-attachment: fixed;
@@ -168,42 +175,6 @@ select option {
 }
 @media (prefers-reduced-motion: reduce) {
   .tgrid-cell::after { display: none; }
-}
-
-/* Aurora — slow drifting gradient blobs behind everything */
-.aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-.aurora::before,
-.aurora::after {
-  content: "";
-  position: absolute;
-  width: 46rem;
-  height: 46rem;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.16;
-}
-.aurora::before {
-  background: radial-gradient(circle, var(--accent), transparent 60%);
-  top: -18rem;
-  left: -10rem;
-  animation: drift-a 26s ease-in-out infinite alternate;
-}
-.aurora::after {
-  background: radial-gradient(circle, var(--accent-2), transparent 60%);
-  bottom: -18rem;
-  right: -12rem;
-  animation: drift-b 32s ease-in-out infinite alternate;
-}
-@keyframes drift-a { to { transform: translate(10rem, 7rem) scale(1.25); } }
-@keyframes drift-b { to { transform: translate(-9rem, -6rem) scale(1.15); } }
-@media (prefers-reduced-motion: reduce) {
-  .aurora::before, .aurora::after { animation: none; }
 }
 
 /* Animated fit-score ring */

@@ -25,7 +25,7 @@ export function TeamComposition({
 
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
+          className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-warm)]"
           style={{ width: `${pct}%` }}
         />
       </div>

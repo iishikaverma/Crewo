@@ -105,7 +105,7 @@ export function Landing() {
             </span>
             <h1 className="text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
               Find your{" "}
-              <span className="bg-gradient-to-br from-[var(--accent-2)] to-[var(--accent)] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-br from-[var(--accent)] to-[var(--accent-warm)] bg-clip-text text-transparent">
                 hackathon crew.
               </span>
             </h1>
