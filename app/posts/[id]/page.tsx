@@ -10,7 +10,7 @@ import {
   deletePost,
   withdrawJoinRequest,
 } from "../actions";
-import { Card, Button, Badge, Textarea } from "@/components/ui";
+import { Card, Button, Badge, Textarea, Avatar } from "@/components/ui";
 import { TeamComposition } from "@/components/TeamComposition";
 import { Confetti } from "@/components/Confetti";
 import { ToastForm } from "@/components/ToastForm";
@@ -94,6 +94,25 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_320px]">
         <div className="order-2 flex min-w-0 flex-col gap-6 lg:order-1">
+      {!isAuthor && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-medium text-muted">Posted by</p>
+          <Link href={`/u/${post.authorId}`} className="group block">
+            <Card className="flex items-center gap-3 transition-colors hover:border-border-strong">
+              <Avatar src={post.author.image} name={post.author.name} size={40} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-fg">{post.author.name ?? "Someone"}</p>
+                <p className="truncate text-xs text-muted">
+                  {[post.author.role, post.author.branch].filter(Boolean).join(" · ") || "View their profile"}
+                </p>
+              </div>
+              <span className="shrink-0 text-xs font-medium text-accent-2 opacity-0 transition-opacity group-hover:opacity-100">
+                View profile →
+              </span>
+            </Card>
+          </Link>
+        </div>
+      )}
       {isAuthor ? (
         <section className="flex flex-col gap-5">
           <div className="flex flex-wrap gap-2">
