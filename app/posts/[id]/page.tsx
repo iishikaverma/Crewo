@@ -116,7 +116,9 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                 {pending.map((r) => (
                   <Card key={r.id}>
                     <p className="text-sm font-medium">
-                      {r.requester.name ?? r.requester.email}
+                      <Link href={`/u/${r.requesterId}`} className="text-fg transition-colors hover:text-accent-2">
+                        {r.requester.name ?? r.requester.email}
+                      </Link>
                       {r.requester.branch ? ` · ${r.requester.branch}` : ""}
                     </p>
                     <div className="mt-1.5">
@@ -145,7 +147,11 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                 <div className="flex flex-col gap-3">
                   {accepted.map((r) => (
                     <div key={r.id} className="rounded-[12px] border border-[var(--success)]/35 bg-[var(--success-soft)] p-3">
-                      <p className="text-sm font-medium">{r.requester.name ?? r.requester.email}</p>
+                      <p className="text-sm font-medium">
+                        <Link href={`/u/${r.requesterId}`} className="text-fg transition-colors hover:text-accent-2">
+                          {r.requester.name ?? r.requester.email}
+                        </Link>
+                      </p>
                       <div className="mt-2"><Contact u={r.requester} /></div>
                     </div>
                   ))}
