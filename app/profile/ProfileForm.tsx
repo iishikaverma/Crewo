@@ -31,7 +31,9 @@ export function ProfileForm({ user }: { user: U }) {
   const openToSet = new Set(user.openTo);
 
   useEffect(() => {
-    if (state?.ok) toast.success(state.message);
+    if (!state) return;
+    if (state.ok) toast.success(state.message);
+    else toast.error(state.message);
   }, [state]);
 
   return (
@@ -39,7 +41,16 @@ export function ProfileForm({ user }: { user: U }) {
       <Card className="flex flex-col gap-5">
         <h2 className="text-sm font-semibold tracking-tight">Basics</h2>
         <Field label="Full name">
-          <Input name="name" defaultValue={user.name ?? ""} required placeholder="e.g. Ishika Verma" />
+          <Input
+            name="name"
+            defaultValue={user.name ?? ""}
+            required
+            maxLength={80}
+            pattern="[^0-9]*"
+            title="Letters only — no numbers"
+            autoComplete="name"
+            placeholder="e.g. Ishika Verma"
+          />
         </Field>
 
         <div className="grid grid-cols-2 gap-4">
@@ -56,12 +67,12 @@ export function ProfileForm({ user }: { user: U }) {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Location">
-            <Input name="location" defaultValue={user.location ?? ""} placeholder="Delhi" />
+            <Input name="location" defaultValue={user.location ?? ""} maxLength={60} pattern="[^0-9]*" title="Letters only — no numbers" placeholder="Delhi" />
           </Field>
           <Field label="Year / branch">
             <div className="flex gap-2">
-              <Input name="year" defaultValue={user.year ?? ""} placeholder="3" />
-              <Input name="branch" defaultValue={user.branch ?? ""} placeholder="CSE" />
+              <Input name="year" defaultValue={user.year ?? ""} inputMode="numeric" pattern="\d{1,4}" maxLength={4} title="Numbers only (e.g. 3 or 2026)" placeholder="3" />
+              <Input name="branch" defaultValue={user.branch ?? ""} maxLength={40} pattern="[^0-9]*" title="Letters only (e.g. CSE)" placeholder="CSE" />
             </div>
           </Field>
         </div>
@@ -95,7 +106,7 @@ export function ProfileForm({ user }: { user: U }) {
       </div>
 
       <Field label="Looking for">
-        <Input name="lookingFor" defaultValue={user.lookingFor ?? ""} placeholder="backend + designer for a weekend hack" />
+        <Input name="lookingFor" defaultValue={user.lookingFor ?? ""} maxLength={300} placeholder="backend + designer for a weekend hack" />
       </Field>
       </Card>
 
@@ -111,7 +122,7 @@ export function ProfileForm({ user }: { user: U }) {
       )}
 
       <Field label="Description">
-        <Textarea name="bio" defaultValue={user.bio ?? ""} rows={3} placeholder="Write your own — what you're building, what you're into, what you want from a team." />
+        <Textarea name="bio" defaultValue={user.bio ?? ""} rows={3} maxLength={1000} placeholder="Write your own — what you're building, what you're into, what you want from a team." />
       </Field>
       </Card>
 
@@ -121,10 +132,10 @@ export function ProfileForm({ user }: { user: U }) {
           GitHub is auto-fetched (avatar, bio, top repos). LinkedIn revealed on connect.
         </p>
         <Field label="GitHub URL">
-          <Input name="githubUrl" defaultValue={user.githubUrl ?? ""} placeholder="https://github.com/you" />
+          <Input name="githubUrl" defaultValue={user.githubUrl ?? ""} inputMode="url" maxLength={200} placeholder="https://github.com/you" />
         </Field>
         <Field label="LinkedIn URL">
-          <Input name="linkedinUrl" defaultValue={user.linkedinUrl ?? ""} />
+          <Input name="linkedinUrl" defaultValue={user.linkedinUrl ?? ""} inputMode="url" maxLength={200} placeholder="https://linkedin.com/in/you" />
         </Field>
       </Card>
 

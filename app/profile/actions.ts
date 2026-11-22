@@ -5,30 +5,30 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUserId, parseSkills } from "@/lib/user";
 import { fetchGithubProfile } from "@/lib/github";
-import { ROLES, OPEN_TO } from "@/lib/skills";
+import { OPEN_TO } from "@/lib/skills";
+import { profileSchema, firstError, type ActionState } from "@/lib/validation";
 
-const str = (v: FormDataEntryValue | null) => {
-  // cap free-text at the trust boundary (covers name/bio/location/urls/lookingFor)
-  const s = String(v ?? "").trim().slice(0, 1000);
-  return s.length ? s : null;
-};
+export type { ActionState };
 
-const pickFrom = (v: FormDataEntryValue | null, allowed: readonly string[]) => {
-  const s = String(v ?? "");
-  return allowed.includes(s) ? s : null;
-};
-
-const intOrNull = (v: FormDataEntryValue | null) => {
-  const s = String(v ?? "").trim();
-  if (!s) return null;
-  const n = Math.round(Number(s));
-  return Number.isFinite(n) ? Math.max(0, Math.min(50, n)) : null;
-};
-
-export type ActionState = { ok: boolean; message: string } | null;
+const nn = (s: string) => (s.length ? s : null);
 
 export async function updateProfile(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const id = await requireUserId();
+
+  const parsed = profileSchema.safeParse({
+    name: formData.get("name") ?? "",
+    role: formData.get("role") ?? "",
+    yearsExperience: formData.get("yearsExperience") ?? "",
+    year: formData.get("year") ?? "",
+    branch: formData.get("branch") ?? "",
+    location: formData.get("location") ?? "",
+    bio: formData.get("bio") ?? "",
+    lookingFor: formData.get("lookingFor") ?? "",
+    githubUrl: formData.get("githubUrl") ?? "",
+    linkedinUrl: formData.get("linkedinUrl") ?? "",
+  });
+  if (!parsed.success) return { ok: false, message: firstError(parsed.error) };
+  const v = parsed.data;
 
   // skills = checked options + "other" free-text, deduped lowercase
   const checked = formData.getAll("skills").map((s) => String(s).toLowerCase());
@@ -38,23 +38,22 @@ export async function updateProfile(_prev: ActionState, formData: FormData): Pro
   const openTo = formData
     .getAll("openTo")
     .map(String)
-    .filter((v) => (OPEN_TO as readonly string[]).includes(v));
+    .filter((o) => (OPEN_TO as readonly string[]).includes(o));
 
-  const githubUrl = str(formData.get("githubUrl"));
-  const gh = await fetchGithubProfile(githubUrl); // null on failure — never blocks save
+  const gh = await fetchGithubProfile(nn(v.githubUrl)); // null on failure — never blocks save
 
   const data: Prisma.UserUpdateInput = {
-    name: str(formData.get("name")),
-    year: str(formData.get("year")),
-    branch: str(formData.get("branch")),
-    location: str(formData.get("location")),
-    role: pickFrom(formData.get("role"), ROLES),
-    yearsExperience: intOrNull(formData.get("yearsExperience")),
+    name: v.name,
+    year: nn(v.year),
+    branch: nn(v.branch),
+    location: nn(v.location),
+    role: nn(v.role),
+    yearsExperience: v.yearsExperience === "" ? null : Number(v.yearsExperience),
     openTo,
-    bio: str(formData.get("bio")),
-    lookingFor: str(formData.get("lookingFor")),
-    githubUrl,
-    linkedinUrl: str(formData.get("linkedinUrl")),
+    bio: nn(v.bio),
+    lookingFor: nn(v.lookingFor),
+    githubUrl: nn(v.githubUrl),
+    linkedinUrl: nn(v.linkedinUrl),
     skills,
   };
 

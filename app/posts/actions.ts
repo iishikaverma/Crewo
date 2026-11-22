@@ -5,40 +5,39 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUserId, parseSkills, capStr } from "@/lib/user";
 import { sendEmail, emailLayout, appUrl } from "@/lib/email";
+import { postSchema, firstError, type ActionState } from "@/lib/validation";
 
-const TYPES = ["hackathon", "project"] as const;
-type PostType = (typeof TYPES)[number];
+type PostType = "hackathon" | "project";
+const nn = (s: string) => (s.length ? s : null);
 
-export async function createPost(formData: FormData) {
+export async function createPost(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const authorId = await requireUserId();
-  const title = capStr(formData.get("title"), 120);
-  const description = capStr(formData.get("description"), 4000);
-  if (!title || !description) throw new Error("Title and description are required");
 
-  const type = String(formData.get("type") ?? "");
-  const safeType: PostType = (TYPES as readonly string[]).includes(type)
-    ? (type as PostType)
-    : "hackathon";
-
-  const teamSize = Math.max(2, Math.min(20, Math.round(Number(formData.get("teamSize")) || 2)));
-  const when = String(formData.get("happeningAt") ?? "");
-  const trimOrNull = (v: FormDataEntryValue | null, max = 300) => {
-    const s = capStr(v, max);
-    return s.length ? s : null;
-  };
+  const parsed = postSchema.safeParse({
+    title: formData.get("title") ?? "",
+    description: formData.get("description") ?? "",
+    type: formData.get("type") ?? "",
+    teamSize: formData.get("teamSize") ?? "",
+    hackathonName: formData.get("hackathonName") ?? "",
+    expecting: formData.get("expecting") ?? "",
+    details: formData.get("details") ?? "",
+    happeningAt: formData.get("happeningAt") ?? "",
+  });
+  if (!parsed.success) return { ok: false, message: firstError(parsed.error) };
+  const v = parsed.data;
 
   const post = await prisma.post.create({
     data: {
       authorId,
-      type: safeType,
-      title,
-      hackathonName: trimOrNull(formData.get("hackathonName")),
-      description,
-      expecting: trimOrNull(formData.get("expecting")),
-      details: trimOrNull(formData.get("details"), 4000),
+      type: v.type as PostType,
+      title: v.title,
+      hackathonName: nn(v.hackathonName),
+      description: v.description,
+      expecting: nn(v.expecting),
+      details: nn(v.details),
       neededSkills: parseSkills(formData.get("neededSkills")),
-      teamSize,
-      happeningAt: when ? new Date(when) : null,
+      teamSize: Number(v.teamSize),
+      happeningAt: v.happeningAt ? new Date(v.happeningAt) : null,
     },
   });
   revalidatePath("/");
