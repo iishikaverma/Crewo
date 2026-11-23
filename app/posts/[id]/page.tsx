@@ -36,8 +36,11 @@ function Contact({ u }: { u: Contactable }) {
   );
 }
 
-export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
+export default async function PostDetail({ params, searchParams }: PageProps<"/posts/[id]">) {
   const { id } = await params;
+  const sp = await searchParams;
+  const fromMine = (Array.isArray(sp.from) ? sp.from[0] : sp.from) === "mine";
+  const back = fromMine ? { href: "/posts/mine", label: "My posts" } : { href: "/", label: "Browse" };
   const me = await requireOnboarded();
 
   const post = await prisma.post.findUnique({
@@ -60,7 +63,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
 
   return (
     <main className="flex flex-col gap-6">
-      <Link href="/" className="text-sm text-muted hover:text-fg">← Browse</Link>
+      <Link href={back.href} className="text-sm text-muted hover:text-fg">← {back.label}</Link>
 
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
@@ -97,7 +100,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
       {!isAuthor && (
         <div className="flex flex-col gap-2">
           <p className="text-xs font-medium text-muted">Posted by</p>
-          <Link href={`/u/${post.authorId}`} className="group block">
+          <Link href={`/u/${post.authorId}?from=post&pid=${post.id}`} className="group block">
             <Card className="flex items-center gap-3 transition-colors hover:border-border-strong">
               <Avatar src={post.author.image} name={post.author.name} size={40} />
               <div className="min-w-0 flex-1">
@@ -135,7 +138,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                 {pending.map((r) => (
                   <Card key={r.id}>
                     <p className="text-sm font-medium">
-                      <Link href={`/u/${r.requesterId}`} className="text-fg transition-colors hover:text-accent-2">
+                      <Link href={`/u/${r.requesterId}?from=post&pid=${post.id}`} className="text-fg transition-colors hover:text-accent-2">
                         {r.requester.name ?? r.requester.email}
                       </Link>
                       {r.requester.branch ? ` · ${r.requester.branch}` : ""}
@@ -167,7 +170,7 @@ export default async function PostDetail({ params }: PageProps<"/posts/[id]">) {
                   {accepted.map((r) => (
                     <div key={r.id} className="rounded-[12px] border border-[var(--success)]/35 bg-[var(--success-soft)] p-3">
                       <p className="text-sm font-medium">
-                        <Link href={`/u/${r.requesterId}`} className="text-fg transition-colors hover:text-accent-2">
+                        <Link href={`/u/${r.requesterId}?from=post&pid=${post.id}`} className="text-fg transition-colors hover:text-accent-2">
                           {r.requester.name ?? r.requester.email}
                         </Link>
                       </p>

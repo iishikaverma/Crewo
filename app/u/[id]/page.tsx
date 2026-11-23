@@ -28,8 +28,21 @@ function ContactLinks({ githubUrl, linkedinUrl }: { githubUrl: string | null; li
   );
 }
 
-export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
+const BACKS: Record<string, { href: string; label: string }> = {
+  browse: { href: "/", label: "Browse" },
+  connections: { href: "/connections", label: "Connections" },
+  people: { href: "/people", label: "People" },
+};
+
+export default async function PublicProfile({ params, searchParams }: PageProps<"/u/[id]">) {
   const { id } = await params;
+  const sp = await searchParams;
+  const from = Array.isArray(sp.from) ? sp.from[0] : sp.from;
+  const pid = Array.isArray(sp.pid) ? sp.pid[0] : sp.pid;
+  const back =
+    from === "post" && pid
+      ? { href: `/posts/${pid}`, label: "Back to post" }
+      : BACKS[from ?? ""] ?? BACKS.people;
   const me = await requireOnboarded();
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) notFound();
@@ -53,7 +66,7 @@ export default async function PublicProfile({ params }: PageProps<"/u/[id]">) {
 
   return (
     <main className="flex flex-col gap-6">
-      <Link href="/people" className="text-sm text-muted hover:text-fg">← People</Link>
+      <Link href={back.href} className="text-sm text-muted hover:text-fg">← {back.label}</Link>
 
       <header className="flex items-start gap-4">
         <Avatar src={user.image} name={user.name ?? user.email} size={64} />

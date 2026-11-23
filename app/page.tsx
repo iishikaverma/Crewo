@@ -154,7 +154,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           <Card className="flex flex-col gap-2">
             <h3 className="text-sm font-semibold">Suggested people</h3>
             {suggested.map((u) => (
-              <Link key={u.id} href={`/u/${u.id}`} className="flex items-center gap-2 rounded-[8px] px-1 py-1 transition-colors hover:bg-surface-2">
+              <Link key={u.id} href={`/u/${u.id}?from=browse`} className="flex items-center gap-2 rounded-[8px] px-1 py-1 transition-colors hover:bg-surface-2">
                 <Avatar src={u.image} name={u.name} size={28} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{u.name}</p>

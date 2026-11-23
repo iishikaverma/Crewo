@@ -11,14 +11,14 @@ export type MyPost = {
   requests: { status: string }[];
 };
 
-export function MyPostRow({ post }: { post: MyPost }) {
+export function MyPostRow({ post, from }: { post: MyPost; from?: string }) {
   const pending = post.requests.filter((r) => r.status === "pending").length;
   const filled = 1 + post.requests.filter((r) => r.status === "accepted").length;
   const closed = post.status === "closed";
 
   return (
     <Link
-      href={`/posts/${post.id}`}
+      href={from ? `/posts/${post.id}?from=${from}` : `/posts/${post.id}`}
       className={
         "block rounded-[10px] border border-border bg-surface px-3 py-2 transition-colors hover:border-border-strong " +
         (closed ? "opacity-60" : "")

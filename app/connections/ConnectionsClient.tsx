@@ -32,7 +32,7 @@ function withTransition(fn: () => void) {
 
 function PersonLink({ user }: { user: { id: string; name: string | null; email: string } }) {
   return (
-    <Link href={`/u/${user.id}`} className="font-medium text-fg transition-colors hover:text-accent-2">
+    <Link href={`/u/${user.id}?from=connections`} className="font-medium text-fg transition-colors hover:text-accent-2">
       {user.name ?? user.email}
     </Link>
   );

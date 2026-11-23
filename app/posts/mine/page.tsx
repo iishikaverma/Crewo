@@ -30,7 +30,7 @@ export default async function MyPostsPage() {
       ) : (
         <div className="flex flex-col gap-3">
           {myPosts.map((p) => (
-            <MyPostRow key={p.id} post={p} />
+            <MyPostRow key={p.id} post={p} from="mine" />
           ))}
         </div>
       )}
