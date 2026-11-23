@@ -42,6 +42,7 @@ export async function Nav() {
               )}
             </Link>
             <Link href="/posts/new" className={link}>New post</Link>
+            <Link href="/posts/mine" className={link}>My posts</Link>
           </span>
         </nav>
 

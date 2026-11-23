@@ -8,6 +8,7 @@ const ICONS: Record<string, React.ReactNode> = {
   "/people": <path d="M7 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2 17c0-2.5 2.2-4 5-4s5 1.5 5 4m2-4c2.2.2 4 1.6 4 4" />,
   "/connections": <path d="M8 12a3 3 0 0 0 4 0l2-2a3 3 0 0 0-4-4l-1 1m1 5a3 3 0 0 1-4 0l-2-2a3 3 0 0 1 4-4l1 1" />,
   "/posts/new": <path d="M10 4v12M4 10h12" />,
+  "/posts/mine": <path d="M4 5h9M4 10h9M4 15h6M16 5v9" />,
   "/profile": <path d="M10 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 7c0-3 2.7-5 6-5s6 2 6 5" />,
   "/stats": <path d="M4 16V9m4 7V5m4 11v-4m4 4V8" />,
 };
@@ -19,6 +20,7 @@ export function SidebarNav({ pending, showStats }: { pending: number; showStats?
     { href: "/people", label: "People" },
     { href: "/connections", label: "Connections", badge: pending },
     { href: "/posts/new", label: "New post" },
+    { href: "/posts/mine", label: "My posts" },
     { href: "/profile", label: "Profile" },
     ...(showStats ? [{ href: "/stats", label: "Stats" }] : []),
   ];

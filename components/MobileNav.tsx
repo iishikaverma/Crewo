@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/people", label: "People" },
   { href: "/connections", label: "Connections" },
   { href: "/posts/new", label: "New post" },
+  { href: "/posts/mine", label: "My posts" },
   { href: "/profile", label: "Profile" },
 ];
 

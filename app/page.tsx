@@ -8,6 +8,7 @@ import { EmptyState, Card, Avatar } from "@/components/ui";
 import { Landing } from "@/components/Landing";
 import { WelcomeToast } from "@/components/WelcomeToast";
 import { TypeGlyph } from "@/components/PostType";
+import { MyPostRow } from "@/components/MyPostRow";
 
 const TYPES = [
   { v: "", label: "All" },
@@ -36,10 +37,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     prisma.post.findMany({
       where: { authorId: me.id },
       orderBy: { createdAt: "desc" },
-      include: {
-        author: { select: { name: true, branch: true, image: true } },
-        _count: { select: { requests: { where: { status: "pending" } } } },
-      },
+      include: { requests: { select: { status: true } } },
     }),
     prisma.connectRequest.count({ where: { toId: me.id, status: "pending" } }),
     prisma.connectRequest.count({ where: { status: "accepted", OR: [{ fromId: me.id }, { toId: me.id }] } }),
@@ -140,14 +138,16 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             {myPosts.length === 0 ? (
               <EmptyState>No posts yet.</EmptyState>
             ) : (
-              myPosts.slice(0, 4).map((p) => (
-                <Link key={p.id} href={`/posts/${p.id}`} className="flex items-center justify-between gap-2 rounded-[10px] border border-border bg-surface px-3 py-2 text-sm transition-colors hover:border-border-strong">
-                  <span className="truncate">{p.title}</span>
-                  {p._count.requests > 0 && (
-                    <span className="shrink-0 rounded-full bg-accent px-1.5 text-[10px] font-semibold text-accent-fg">{p._count.requests}</span>
-                  )}
-                </Link>
-              ))
+              <>
+                {myPosts.slice(0, 4).map((p) => (
+                  <MyPostRow key={p.id} post={p} />
+                ))}
+                {myPosts.length > 4 && (
+                  <Link href="/posts/mine" className="mt-1 text-xs text-accent-2 hover:underline">
+                    View all ({myPosts.length}) →
+                  </Link>
+                )}
+              </>
             )}
           </div>
 
