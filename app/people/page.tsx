@@ -50,11 +50,14 @@ export default async function PeoplePage({ searchParams }: PageProps<"/people">)
   });
 
   const active = hasActiveFilter(filter);
+  const byRecency = (a: (typeof users)[number], b: (typeof users)[number]) =>
+    +b.createdAt - +a.createdAt;
   const ranked = users
     .map((u) => ({ u, fit: active ? peopleFit(u, filter) : 0 }))
     .sort((a, b) =>
-      active ? b.fit - a.fit : completeness(b.u) - completeness(a.u) ||
-      +b.u.createdAt - +a.u.createdAt
+      active
+        ? b.fit - a.fit || byRecency(a.u, b.u)
+        : completeness(b.u) - completeness(a.u) || byRecency(a.u, b.u)
     );
 
   return (
