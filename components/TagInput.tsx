@@ -37,13 +37,13 @@ export function TagInput({
     <div>
       <div className="flex flex-wrap items-center gap-1.5 rounded-[10px] border border-border bg-surface p-2 transition-colors focus-within:border-accent">
         {tags.map((t) => (
-          <span key={t} className="flex items-center gap-1 rounded-md bg-surface-2 px-2 py-0.5 font-mono text-xs text-fg">
-            {t}
+          <span key={t} className="flex max-w-full items-center gap-1 rounded-md bg-surface-2 px-2 py-0.5 font-mono text-xs text-fg">
+            <span className="min-w-0 break-all">{t}</span>
             <button
               type="button"
               aria-label={`Remove ${t}`}
               onClick={() => setTags((x) => x.filter((y) => y !== t))}
-              className="text-faint hover:text-fg"
+              className="shrink-0 text-faint hover:text-fg"
             >
               ×
             </button>
@@ -55,7 +55,11 @@ export function TagInput({
           onKeyDown={onKeyDown}
           onBlur={(e) => add(e.currentTarget.value)}
           placeholder={tags.length ? "" : placeholder}
-          className="min-w-28 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-faint"
+          // Inline outline:none beats the unlayered global :focus-visible outline rule
+          // in globals.css (Tailwind utilities are layered and lose to it). The container's
+          // focus-within:border-accent is the visible focus indicator.
+          style={{ outline: "none" }}
+          className="min-w-28 flex-1 bg-transparent text-sm text-fg placeholder:text-faint"
         />
       </div>
       <input type="hidden" name={name} value={tags.join(",")} />
