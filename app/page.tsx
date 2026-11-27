@@ -162,7 +162,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                 </div>
               </Link>
             ))}
-            <Link href="/people" className="mt-1 text-xs text-accent-2 hover:underline">Browse everyone →</Link>
+            <Link href="/people" className="relative mt-1 inline-block pb-1 text-xs text-accent-2 no-underline after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100 focus-visible:after:scale-x-100relative inline-flex w-fit mt-1 pb-1 text-xs text-accent-2 no-underline
+    after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full
+    after:origin-left after:scale-x-0 after:bg-current
+    after:transition-transform after:duration-300
+    hover:after:scale-x-100 focus-visible:after:scale-x-100">Browse everyone →</Link>
           </Card>
         </aside>
       </div>
